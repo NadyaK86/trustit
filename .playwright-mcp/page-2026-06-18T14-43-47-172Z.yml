@@ -1,0 +1,376 @@
+- generic [active] [ref=e1]:
+  - banner:
+    - generic [ref=e3]:
+      - link "Т ТрастИнкомТрэйд" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e6]: Т
+        - generic [ref=e7]: ТрастИнкомТрэйд
+      - navigation [ref=e8]:
+        - link "Каталог" [ref=e9] [cursor=pointer]:
+          - /url: /catalog
+        - link "Решения" [ref=e10] [cursor=pointer]:
+          - /url: /solutions
+        - link "Услуги" [ref=e11] [cursor=pointer]:
+          - /url: /services
+        - link "Портфолио" [ref=e12] [cursor=pointer]:
+          - /url: /portfolio
+        - link "О компании" [ref=e13] [cursor=pointer]:
+          - /url: /about
+        - link "Новости" [ref=e14] [cursor=pointer]:
+          - /url: /news
+        - link "Контакты" [ref=e15] [cursor=pointer]:
+          - /url: /contacts
+      - generic [ref=e16]:
+        - link "WhatsApp" [ref=e17] [cursor=pointer]:
+          - /url: https://wa.me/375XXXXXXXXX
+          - img [ref=e18]
+        - link "Telegram" [ref=e20] [cursor=pointer]:
+          - /url: https://t.me/XXXXXXXXX
+          - img [ref=e21]
+        - link "Перезвоните мне" [ref=e23] [cursor=pointer]:
+          - /url: /contacts#callback
+  - main [ref=e25]:
+    - generic [ref=e26]:
+      - generic:
+        - img
+      - generic [ref=e28]:
+        - generic [ref=e29]:
+          - link "Официальный партнёр SmartPlayer" [ref=e30] [cursor=pointer]:
+            - /url: /solutions/digital-signage
+            - text: Официальный партнёр SmartPlayer
+          - heading "Системная интеграция аудиовизуальных решений и информационных технологий" [level=1] [ref=e32]:
+            - text: Системная интеграция
+            - text: аудиовизуальных решений и информационных технологий
+          - paragraph [ref=e33]: Для вашего бизнеса — проектируем, поставляем и сопровождаем AV-системы, цифровые экраны и IT-инфраструктуру в Беларуси.
+        - generic [ref=e34]:
+          - paragraph [ref=e35]: Чем мы занимаемся
+          - generic [ref=e36]:
+            - link "01 Digital Signage Digital Signage" [ref=e37] [cursor=pointer]:
+              - /url: /solutions/digital-signage
+              - generic [ref=e38]:
+                - generic [ref=e39]: "01"
+                - generic [ref=e40]: Digital Signage
+                - generic [ref=e41]: Digital Signage
+              - img [ref=e42]
+            - link "02 AV solutions AV solutions" [ref=e44] [cursor=pointer]:
+              - /url: /solutions/av-systems
+              - generic [ref=e45]:
+                - generic [ref=e46]: "02"
+                - generic [ref=e47]: AV solutions
+                - generic [ref=e48]: AV solutions
+              - img [ref=e49]
+            - link "03 Collaboration Collaboration" [ref=e51] [cursor=pointer]:
+              - /url: /solutions/meeting-rooms
+              - generic [ref=e52]:
+                - generic [ref=e53]: "03"
+                - generic [ref=e54]: Collaboration
+                - generic [ref=e55]: Collaboration
+              - img [ref=e56]
+            - link "04 IT infrastructure IT infrastructure" [ref=e58] [cursor=pointer]:
+              - /url: /solutions/it-infrastructure
+              - generic [ref=e59]:
+                - generic [ref=e60]: "04"
+                - generic [ref=e61]: IT infrastructure
+                - generic [ref=e62]: IT infrastructure
+              - img [ref=e63]
+      - generic [ref=e66]: Scroll
+    - generic [ref=e69]:
+      - generic [ref=e70]:
+        - generic [ref=e71]:
+          - paragraph [ref=e72]: Направления
+          - heading "Чем мы занимаемся" [level=2] [ref=e73]
+        - link "Все решения" [ref=e74] [cursor=pointer]:
+          - /url: /solutions
+          - text: Все решения
+          - img [ref=e75]
+      - generic [ref=e77]:
+        - link "Digital Signage 01 Digital Signage Digital Signage Официальный представитель SmartPlayer в РБ. Платформа для управления цифровыми экранами и видеостенами. Подробнее" [ref=e78] [cursor=pointer]:
+          - /url: /solutions/digital-signage
+          - img "Digital Signage" [ref=e79]
+          - generic [ref=e81]:
+            - generic [ref=e82]: "01"
+            - generic [ref=e83]: Digital Signage
+          - generic [ref=e84]:
+            - heading "Digital Signage" [level=3] [ref=e85]
+            - paragraph [ref=e86]: Официальный представитель SmartPlayer в РБ. Платформа для управления цифровыми экранами и видеостенами.
+            - generic [ref=e87]:
+              - text: Подробнее
+              - img [ref=e88]
+        - link "AV solutions 02 AV solutions AV solutions Интерактивные панели, видеостены, LED-кубы и нестандартные инсталляции для бизнеса любого масштаба. Подробнее" [ref=e90] [cursor=pointer]:
+          - /url: /solutions/av-systems
+          - img "AV solutions" [ref=e91]
+          - generic [ref=e93]:
+            - generic [ref=e94]: "02"
+            - generic [ref=e95]: AV solutions
+          - generic [ref=e96]:
+            - heading "AV solutions" [level=3] [ref=e97]
+            - paragraph [ref=e98]: Интерактивные панели, видеостены, LED-кубы и нестандартные инсталляции для бизнеса любого масштаба.
+            - generic [ref=e99]:
+              - text: Подробнее
+              - img [ref=e100]
+      - generic [ref=e102]:
+        - 'link "Collaboration 03 Collaboration Collaboration Оснащение переговорных Small / Medium / Large / XL: ВКС, SkySound, BYOD, управление комнатой. Подробнее" [ref=e103] [cursor=pointer]':
+          - /url: /solutions/meeting-rooms
+          - img "Collaboration" [ref=e104]
+          - generic [ref=e106]:
+            - generic [ref=e107]: "03"
+            - generic [ref=e108]: Collaboration
+          - generic [ref=e109]:
+            - heading "Collaboration" [level=3] [ref=e110]
+            - paragraph [ref=e111]: "Оснащение переговорных Small / Medium / Large / XL: ВКС, SkySound, BYOD, управление комнатой."
+            - generic [ref=e112]:
+              - text: Подробнее
+              - img [ref=e113]
+        - link "IT infrastructure 04 IT infrastructure IT infrastructure Сетевое оборудование Maipu, СХД Qsan, серверы, СКС, Wi-Fi 6 / 6E. Подробнее" [ref=e115] [cursor=pointer]:
+          - /url: /solutions/it-infrastructure
+          - img "IT infrastructure" [ref=e116]
+          - generic [ref=e118]:
+            - generic [ref=e119]: "04"
+            - generic [ref=e120]: IT infrastructure
+          - generic [ref=e121]:
+            - heading "IT infrastructure" [level=3] [ref=e122]
+            - paragraph [ref=e123]: Сетевое оборудование Maipu, СХД Qsan, серверы, СКС, Wi-Fi 6 / 6E.
+            - generic [ref=e124]:
+              - text: Подробнее
+              - img [ref=e125]
+    - generic [ref=e129]:
+      - generic [ref=e130]:
+        - paragraph [ref=e131]: Услуги
+        - heading "Полный цикл внедрения" [level=2] [ref=e132]:
+          - text: Полный цикл
+          - text: внедрения
+        - paragraph [ref=e133]: Берём на себя весь процесс — от разработки контента и проектирования до монтажа, пусконаладки и долгосрочного технического обслуживания.
+        - img "Монтаж и пусконаладка оборудования" [ref=e135]
+      - generic [ref=e136]:
+        - link "Разработка контента Создание медиаконтента для видеостен и LED-кубов под задачи вашего бизнеса." [ref=e137] [cursor=pointer]:
+          - /url: /services#content
+          - img [ref=e139]
+          - heading "Разработка контента" [level=3] [ref=e141]
+          - paragraph [ref=e142]: Создание медиаконтента для видеостен и LED-кубов под задачи вашего бизнеса.
+        - link "Пусконаладочные работы Настройка и ввод в эксплуатацию оборудования. Обучение персонала." [ref=e143] [cursor=pointer]:
+          - /url: /services#commissioning
+          - img [ref=e145]
+          - heading "Пусконаладочные работы" [level=3] [ref=e148]
+          - paragraph [ref=e149]: Настройка и ввод в эксплуатацию оборудования. Обучение персонала.
+        - link "Монтаж Профессиональный монтаж оборудования с соблюдением всех технических стандартов." [ref=e150] [cursor=pointer]:
+          - /url: /services#installation
+          - img [ref=e152]
+          - heading "Монтаж" [level=3] [ref=e154]
+          - paragraph [ref=e155]: Профессиональный монтаж оборудования с соблюдением всех технических стандартов.
+        - link "Техническое обслуживание Плановое и аварийное обслуживание для бесперебойной работы систем." [ref=e156] [cursor=pointer]:
+          - /url: /services#support
+          - img [ref=e158]
+          - heading "Техническое обслуживание" [level=3] [ref=e160]
+          - paragraph [ref=e161]: Плановое и аварийное обслуживание для бесперебойной работы систем.
+    - generic [ref=e165]:
+      - generic:
+        - img
+      - generic [ref=e167]:
+        - paragraph [ref=e168]: Официальный представитель в Беларуси
+        - heading "SmartPlayer" [level=2] [ref=e169]
+        - paragraph [ref=e170]: Профессиональная платформа управления цифровыми экранами. Видеостены, рекламные дисплеи, навигация — из единого кабинета.
+        - generic [ref=e171]:
+          - link "Запросить демо-доступ" [ref=e172] [cursor=pointer]:
+            - /url: /solutions/digital-signage#demo
+            - text: Запросить демо-доступ
+            - img [ref=e173]
+          - link "Подробнее" [ref=e175] [cursor=pointer]:
+            - /url: /solutions/digital-signage
+    - generic [ref=e177]:
+      - generic [ref=e178]:
+        - generic [ref=e179]:
+          - paragraph [ref=e180]: Кейсы
+          - heading "Выполненные проекты" [level=2] [ref=e181]
+        - link "Все проекты" [ref=e182] [cursor=pointer]:
+          - /url: /portfolio
+          - text: Все проекты
+          - img [ref=e183]
+      - generic [ref=e185]:
+        - link "Видеостена в торговом центре Ритейл Видеостена в торговом центре Монтаж бесшовной видеостены 3×3 из LCD-панелей в атриуме ТЦ. Управление через SmartPlayer. Видеостена SmartPlayer" [ref=e186] [cursor=pointer]:
+          - /url: /portfolio
+          - img "Видеостена в торговом центре" [ref=e188]
+          - generic [ref=e189]:
+            - text: Ритейл
+            - heading "Видеостена в торговом центре" [level=3] [ref=e190]
+            - paragraph [ref=e191]: Монтаж бесшовной видеостены 3×3 из LCD-панелей в атриуме ТЦ. Управление через SmartPlayer.
+            - generic [ref=e192]:
+              - generic [ref=e193]: Видеостена
+              - generic [ref=e194]: SmartPlayer
+        - link "AV-система в офисе Бизнес-центр AV-система в офисе Оснащение 8 переговорных комнат системами ВКС, навигационные экраны в лобби. ВКС Навигация" [ref=e195] [cursor=pointer]:
+          - /url: /portfolio
+          - img "AV-система в офисе" [ref=e197]
+          - generic [ref=e198]:
+            - text: Бизнес-центр
+            - heading "AV-система в офисе" [level=3] [ref=e199]
+            - paragraph [ref=e200]: Оснащение 8 переговорных комнат системами ВКС, навигационные экраны в лобби.
+            - generic [ref=e201]:
+              - generic [ref=e202]: ВКС
+              - generic [ref=e203]: Навигация
+        - link "Digital-меню в ресторане HoReCa Digital-меню в ресторане Внедрение SmartPlayer для управления меню-бордами в сети из 12 ресторанов. SmartPlayer Меню-борды" [ref=e204] [cursor=pointer]:
+          - /url: /portfolio
+          - img "Digital-меню в ресторане" [ref=e206]
+          - generic [ref=e207]:
+            - text: HoReCa
+            - heading "Digital-меню в ресторане" [level=3] [ref=e208]
+            - paragraph [ref=e209]: Внедрение SmartPlayer для управления меню-бордами в сети из 12 ресторанов.
+            - generic [ref=e210]:
+              - generic [ref=e211]: SmartPlayer
+              - generic [ref=e212]: Меню-борды
+    - generic [ref=e214]:
+      - generic [ref=e215]:
+        - generic [ref=e216]:
+          - paragraph [ref=e217]: Новости
+          - heading "Актуальное" [level=2] [ref=e218]
+        - link "Все новости" [ref=e219] [cursor=pointer]:
+          - /url: /news
+          - text: Все новости
+          - img [ref=e220]
+      - generic [ref=e222]:
+        - link "SmartPlayer обновил платформу до версии 5.0 Новости платформы 15 марта 2025 SmartPlayer обновил платформу до версии 5.0" [ref=e223] [cursor=pointer]:
+          - /url: /news/smartplayer-v5
+          - img "SmartPlayer обновил платформу до версии 5.0" [ref=e225]
+          - generic [ref=e226]:
+            - generic [ref=e227]:
+              - generic [ref=e228]: Новости платформы
+              - generic [ref=e229]: 15 марта 2025
+            - heading "SmartPlayer обновил платформу до версии 5.0" [level=3] [ref=e230]
+        - link "Открытие нового шоурума в Минске Компания 28 февраля 2025 Открытие нового шоурума в Минске" [ref=e231] [cursor=pointer]:
+          - /url: /news
+          - img "Открытие нового шоурума в Минске" [ref=e233]
+          - generic [ref=e234]:
+            - generic [ref=e235]:
+              - generic [ref=e236]: Компания
+              - generic [ref=e237]: 28 февраля 2025
+            - heading "Открытие нового шоурума в Минске" [level=3] [ref=e238]
+        - link "Тренды Digital Signage в 2025 году Аналитика 20 января 2025 Тренды Digital Signage в 2025 году" [ref=e239] [cursor=pointer]:
+          - /url: /news
+          - img "Тренды Digital Signage в 2025 году" [ref=e241]
+          - generic [ref=e242]:
+            - generic [ref=e243]:
+              - generic [ref=e244]: Аналитика
+              - generic [ref=e245]: 20 января 2025
+            - heading "Тренды Digital Signage в 2025 году" [level=3] [ref=e246]
+    - generic [ref=e251]:
+      - heading "Готовы обсудить проект?" [level=2] [ref=e252]
+      - paragraph [ref=e253]: Оставьте заявку — рассчитаем стоимость и подберём решение под ваши задачи.
+      - generic [ref=e254]:
+        - link "Перезвоните мне" [ref=e255] [cursor=pointer]:
+          - /url: /contacts#callback
+        - link "Контакты" [ref=e256] [cursor=pointer]:
+          - /url: /contacts
+    - generic [ref=e259]:
+      - heading "Получить расчёт проекта" [level=2] [ref=e260]
+      - paragraph [ref=e261]: Опишите задачу — подготовим коммерческое предложение.
+      - generic [ref=e262]:
+        - generic [ref=e263]:
+          - generic [ref=e264]:
+            - generic [ref=e265]: Имя *
+            - textbox "Имя *" [ref=e266]:
+              - /placeholder: Иван Иванов
+          - generic [ref=e267]:
+            - generic [ref=e268]: Компания
+            - textbox "Компания" [ref=e269]:
+              - /placeholder: ООО «Название»
+        - generic [ref=e270]:
+          - generic [ref=e271]:
+            - generic [ref=e272]: Телефон *
+            - textbox "Телефон *" [ref=e273]:
+              - /placeholder: +375 (XX) XXX-XX-XX
+          - generic [ref=e274]:
+            - generic [ref=e275]: Email
+            - textbox "Email" [ref=e276]:
+              - /placeholder: email@company.by
+        - generic [ref=e277]:
+          - generic [ref=e278]: Описание задачи
+          - textbox "Описание задачи" [ref=e279]:
+            - /placeholder: Опишите проект или приложите ссылку на ТЗ...
+        - generic [ref=e280]:
+          - generic [ref=e281]: Бюджет (необязательно)
+          - textbox "Бюджет (необязательно)" [ref=e282]:
+            - /placeholder: "Например: до 10 000 USD, поэтапно"
+        - generic [ref=e283] [cursor=pointer]:
+          - checkbox "Я соглашаюсь на обработку персональных данных в соответствии с Политикой обработки персональных данных." [ref=e284]
+          - generic [ref=e285]:
+            - text: Я соглашаюсь на обработку персональных данных в соответствии с
+            - link "Политикой обработки персональных данных" [ref=e286]:
+              - /url: /privacy
+            - text: .
+        - button "Отправить" [ref=e288]
+  - contentinfo [ref=e289]:
+    - generic [ref=e290]:
+      - generic [ref=e291]:
+        - generic [ref=e292]:
+          - generic [ref=e293]:
+            - generic [ref=e295]: Т
+            - generic [ref=e296]: ТрастИнкомТрэйд
+          - paragraph [ref=e297]: Системная интеграция и аудиовизуальные решения для бизнеса в Республике Беларусь.
+          - paragraph [ref=e298]: Официальный представитель SmartPlayer в РБ.
+        - generic [ref=e299]:
+          - heading "Каталог и решения" [level=4] [ref=e300]
+          - list [ref=e301]:
+            - listitem [ref=e302]:
+              - link "Каталог товаров" [ref=e303] [cursor=pointer]:
+                - /url: /catalog
+            - listitem [ref=e304]:
+              - link "Digital Signage (SmartPlayer)" [ref=e305] [cursor=pointer]:
+                - /url: /solutions/digital-signage
+            - listitem [ref=e306]:
+              - link "Аудиовизуальные системы" [ref=e307] [cursor=pointer]:
+                - /url: /solutions/av-systems
+            - listitem [ref=e308]:
+              - link "Переговорные комнаты" [ref=e309] [cursor=pointer]:
+                - /url: /solutions/meeting-rooms
+            - listitem [ref=e310]:
+              - link "IT-инфраструктура" [ref=e311] [cursor=pointer]:
+                - /url: /solutions/it-infrastructure
+        - generic [ref=e312]:
+          - heading "Услуги" [level=4] [ref=e313]
+          - list [ref=e314]:
+            - listitem [ref=e315]:
+              - link "Разработка контента" [ref=e316] [cursor=pointer]:
+                - /url: /services#content
+            - listitem [ref=e317]:
+              - link "Пусконаладочные работы" [ref=e318] [cursor=pointer]:
+                - /url: /services#commissioning
+            - listitem [ref=e319]:
+              - link "Монтаж" [ref=e320] [cursor=pointer]:
+                - /url: /services#installation
+            - listitem [ref=e321]:
+              - link "Техническое обслуживание" [ref=e322] [cursor=pointer]:
+                - /url: /services#support
+        - generic [ref=e323]:
+          - heading "Контакты" [level=4] [ref=e324]
+          - list [ref=e325]:
+            - listitem [ref=e326]:
+              - link "+375 (XX) XXX-XX-XX" [ref=e327] [cursor=pointer]:
+                - /url: tel:+375XXXXXXXXX
+            - listitem [ref=e328]:
+              - link "info@trust-inc-trade.by" [ref=e329] [cursor=pointer]:
+                - /url: mailto:info@trust-inc-trade.by
+            - listitem [ref=e330]: г. Минск, ул. Пример, 1
+          - generic [ref=e331]:
+            - link "Telegram" [ref=e332] [cursor=pointer]:
+              - /url: https://t.me/XXXXXXXXX
+              - img [ref=e333]
+            - link "WhatsApp" [ref=e335] [cursor=pointer]:
+              - /url: https://wa.me/375XXXXXXXXX
+              - img [ref=e336]
+      - generic [ref=e338]:
+        - paragraph [ref=e339]: © 2026 ООО «ТрастИнкомТрэйд». Все права защищены.
+        - generic [ref=e340]:
+          - link "Политика обработки ПДн" [ref=e341] [cursor=pointer]:
+            - /url: /privacy
+          - generic [ref=e342]: Республика Беларусь
+  - link "Перезвоните мне" [ref=e343] [cursor=pointer]:
+    - /url: /contacts#callback
+    - img [ref=e344]
+    - text: Перезвоните мне
+  - dialog "Согласие на использование cookie" [ref=e346]:
+    - paragraph [ref=e347]:
+      - text: Мы используем cookie и веб-аналитику, чтобы улучшать сайт. Подробнее — в
+      - link "Политике обработки персональных данных" [ref=e348] [cursor=pointer]:
+        - /url: /privacy
+      - text: .
+    - generic [ref=e349]:
+      - button "Принять" [ref=e350]
+      - button "Только необходимые" [ref=e351]

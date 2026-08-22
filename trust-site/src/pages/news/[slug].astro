@@ -1,0 +1,135 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('news');
+  return posts.map(post => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const formattedDate = new Date(post.data.date).toLocaleDateString('ru-RU', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+
+// Другие новости (sidebar)
+const allPosts = await getCollection('news');
+const otherPosts = allPosts
+  .filter(p => p.id !== post.id)
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .slice(0, 3);
+---
+
+<Layout
+  title={post.data.title}
+  description={post.data.excerpt}
+  ogImage={post.data.image}
+  ogType="article"
+>
+
+  <!-- Breadcrumb -->
+  <section class="border-b border-slate-100 py-4">
+    <div class="max-w-6xl mx-auto px-6 lg:px-8">
+      <nav class="flex items-center gap-2 text-sm text-slate-400">
+        <a href="/" class="hover:text-slate-700 transition-colors">Главная</a>
+        <span>/</span>
+        <a href="/news" class="hover:text-slate-700 transition-colors">Новости</a>
+        <span>/</span>
+        <span class="text-slate-600 truncate max-w-xs">{post.data.title}</span>
+      </nav>
+    </div>
+  </section>
+
+  <div class="max-w-6xl mx-auto px-6 lg:px-8 py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+
+      <!-- Main content -->
+      <article class="lg:col-span-2">
+        <!-- Meta -->
+        <div class="flex items-center gap-3 mb-6">
+          <span class="text-xs font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-full">{post.data.tag}</span>
+          <span class="text-sm text-slate-400">{formattedDate}</span>
+        </div>
+
+        <h1 class="font-display text-3xl md:text-4xl font-semibold text-slate-900 leading-tight mb-6 tracking-tight">
+          {post.data.title}
+        </h1>
+
+        <p class="text-lg text-slate-500 leading-relaxed mb-8 border-l-2 border-blue-500 pl-4">
+          {post.data.excerpt}
+        </p>
+
+        {post.data.image && (
+          <img
+            src={post.data.image}
+            alt={post.data.title}
+            class="w-full rounded-3xl mb-8 aspect-video object-cover ring-1 ring-slate-200/80 shadow-lg"
+            loading="lazy"
+            decoding="async"
+          />
+        )}
+
+        <!-- Markdown content -->
+        <div class="prose prose-gray max-w-none prose-headings:font-semibold prose-headings:text-slate-900 prose-p:text-slate-600 prose-p:leading-relaxed prose-li:text-slate-600 prose-a:text-blue-600 prose-strong:text-slate-900">
+          <Content />
+        </div>
+
+        <!-- Back -->
+        <div class="mt-12 pt-8 border-t border-slate-100">
+          <a href="/news" class="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+            Все новости
+          </a>
+        </div>
+      </article>
+
+      <!-- Sidebar -->
+      <aside class="lg:col-span-1">
+        <div class="sticky top-24 space-y-6">
+          <!-- CTA -->
+          <div class="rounded-2xl p-6 text-white bg-gradient-to-br from-blue-600 to-blue-800 shadow-xl shadow-blue-900/20">
+            <h3 class="font-display font-semibold mb-2">Запросить демо</h3>
+            <p class="text-sm text-blue-100 mb-4">14 дней бесплатного доступа к SmartPlayer.</p>
+            <a
+              href="/solutions/digital-signage#demo"
+              class="block text-center bg-white text-blue-700 text-sm font-semibold px-4 py-3 rounded-xl hover:bg-blue-50 transition-colors"
+            >
+              Получить демо-доступ
+            </a>
+          </div>
+
+          <!-- Other news -->
+          {otherPosts.length > 0 && (
+            <div>
+              <h4 class="text-sm font-semibold text-slate-900 uppercase tracking-wider mb-4">Другие новости</h4>
+              <div class="space-y-4">
+                {otherPosts.map(p => (
+                  <a href={`/news/${p.id}`} class="block group">
+                    <span class="text-xs text-blue-600">{p.data.tag}</span>
+                    <p class="text-sm font-medium text-slate-900 group-hover:text-blue-600 transition-colors leading-snug mt-0.5">
+                      {p.data.title}
+                    </p>
+                    <span class="text-xs text-slate-400 mt-0.5 block">
+                      {new Date(p.data.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}
+                    </span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+</Layout>

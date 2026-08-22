@@ -1,0 +1,288 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import ContactForm from '../../../components/ContactForm.astro';
+import ParallaxSection from '../../../components/ParallaxSection.astro';
+import SolutionsNav from '../../../components/SolutionsNav.astro';
+import { siteImg } from '../../../lib/site-images';
+import { getEntry } from 'astro:content';
+
+const entry = await getEntry('site', 'digital-signage');
+if (!entry) throw new Error('Добавьте src/content/site/digital-signage.md');
+
+const d = entry.data as Record<string, unknown>;
+const features = d.features as Array<{ title: string; desc: string }>;
+const industriesRaw = d.industries as Array<{ slug?: string; title: string; desc: string; imageKey: string; tag: string }>;
+const industries = industriesRaw.map((ind) => ({
+  ...ind,
+  img: siteImg(ind.imageKey),
+  href: ind.slug ? `/solutions/digital-signage/${ind.slug}` : undefined,
+}));
+const steps = d.steps as Array<{ num: string; title: string; desc: string }>;
+const parallaxBg = siteImg(String(d.parallaxImageKey ?? 'smartplayerParallax'));
+const heroVisual = siteImg(String(d.heroVisualImageKey ?? 'smartplayerHeroVisual'));
+---
+
+<Layout title={String(d.title)} description={d.description ? String(d.description) : undefined}>
+
+  <SolutionsNav />
+
+  <!-- Hero -->
+  <section class="border-b border-slate-100 py-16 md:py-24">
+    <div class="max-w-6xl mx-auto px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div>
+          <span class="inline-block text-xs font-semibold text-blue-600 uppercase tracking-widest mb-5 px-3 py-1 bg-blue-50 rounded-full">
+            {d.heroBadge}
+          </span>
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-semibold text-slate-900 leading-tight mb-5">
+            {d.heroTitle}
+          </h1>
+          <p class="text-xl text-slate-500 leading-relaxed mb-3">
+            {d.heroLead}
+          </p>
+          <p class="text-base text-slate-400 mb-8">
+            {d.heroSub}
+          </p>
+          <div class="flex flex-wrap gap-3">
+            <a href={String(d.heroCtaPrimaryHref)} class="px-6 py-3.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+              {d.heroCtaPrimaryLabel}
+            </a>
+            <a href={String(d.heroCtaSecondaryHref)} class="px-6 py-3.5 border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:border-slate-400 transition-colors">
+              {d.heroCtaSecondaryLabel}
+            </a>
+          </div>
+        </div>
+        <!-- Visual -->
+        <div class="relative">
+          <div class="rounded-2xl overflow-hidden aspect-[4/3] bg-slate-900 flex items-center justify-center relative">
+            <img
+              src={heroVisual}
+              alt={String(d.heroVisualAlt)}
+              width={900}
+              height={675}
+              class="w-full h-full object-cover opacity-60"
+              fetchpriority="high"
+              decoding="async"
+            />
+            <!-- Overlay с иконкой платформы -->
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="text-center">
+                <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                  </svg>
+                </div>
+                <span class="text-white font-semibold text-lg">{d.heroTitle}</span>
+                <p class="text-white/60 text-sm mt-1">Digital Signage Platform</p>
+              </div>
+            </div>
+          </div>
+          <!-- Badge -->
+          <div class="absolute -bottom-4 -left-4 bg-white border border-slate-200 rounded-xl px-4 py-3 shadow-sm">
+            <span class="text-xs text-slate-500 block">{d.heroStatLabel}</span>
+            <span class="text-xl font-semibold text-slate-900">{d.heroStatValue}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Certificate strip -->
+  <section class="py-12 bg-slate-50 border-y border-slate-100">
+    <div class="max-w-6xl mx-auto px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+        <div class="md:col-span-4">
+          <a href="https://smartplayer.ru/partners" target="_blank" rel="noopener noreferrer" class="block rounded-xl overflow-hidden border border-slate-200 bg-white shadow-sm hover:shadow-md transition-shadow">
+            <img
+              src={'/images/spCertificate.webp'}
+              alt="Сертификат партнёра SmartPlayer"
+              class="w-full h-auto object-contain"
+              loading="lazy"
+            />
+          </a>
+        </div>
+        <div class="md:col-span-8">
+          <p class="text-xs font-semibold text-blue-600 uppercase tracking-widest mb-2">Партнёрский статус</p>
+          <h2 class="text-2xl md:text-3xl font-semibold text-slate-900 mb-3">Официальный партнёр SmartPlayer в Республике Беларусь</h2>
+          <p class="text-slate-500 leading-relaxed max-w-2xl">
+            Прямые лицензии, демо-доступ на 14 дней, техническая поддержка на русском языке. Сертификат подтверждает официальный статус партнёра — нажмите, чтобы открыть.
+          </p>
+          <a href="https://smartplayer.ru/partners" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 mt-4 font-medium">
+            Открыть страницу партнёров SmartPlayer
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features + How it works -->
+  <section id="features" class="py-24 scroll-mt-24">
+    <div class="max-w-6xl mx-auto px-6 lg:px-8">
+      <div class="mb-12">
+        <p class="text-xs font-semibold text-blue-600 uppercase tracking-widest mb-2">{d.featuresEyebrow}</p>
+        <h2 class="text-3xl md:text-4xl font-semibold text-slate-900">{d.featuresTitle}</h2>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+        <!-- Left: how it works image -->
+        <div class="lg:col-span-6">
+          <div class="rounded-2xl overflow-hidden border border-slate-200 bg-white">
+            <img
+              src={'/images/dsHowItWorks.webp'}
+              alt="SmartPlayer — схема работы платформы"
+              class="w-full h-auto object-contain bg-white p-4"
+              loading="lazy"
+            />
+            <div class="p-5 border-t border-slate-200 bg-slate-50">
+              <p class="text-xs font-semibold text-blue-600 uppercase tracking-widest mb-1">Как это работает</p>
+              <p class="text-sm text-slate-600 leading-relaxed">
+                Одна точка или сеть из тысяч экранов — управляются из единого облачного кабинета SmartPlayer с любого устройства.
+              </p>
+              <a href="https://smartplayer.ru" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 mt-3 text-xs text-blue-600 hover:text-blue-700">
+                Источник: smartplayer.ru
+                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: compact features list -->
+        <div class="lg:col-span-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {features.map((f) => (
+              <div class="fade-in border border-slate-200 rounded-xl p-4 hover:border-blue-200 hover:shadow-sm transition-all">
+                <div class="flex items-start gap-3">
+                  <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"/>
+                    </svg>
+                  </div>
+                  <div class="min-w-0">
+                    <h3 class="font-semibold text-slate-900 text-sm mb-1">{f.title}</h3>
+                    <p class="text-xs text-slate-500 leading-relaxed">{f.desc}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Industries — главный блок -->
+  <section id="industries" class="py-24 bg-[#0F1929] scroll-mt-24">
+    <div class="max-w-6xl mx-auto px-6 lg:px-8">
+      <div class="mb-12">
+        <p class="text-xs font-semibold text-blue-400 uppercase tracking-widest mb-2">{d.industriesEyebrow}</p>
+        <h2 class="text-3xl md:text-4xl font-semibold text-white">{d.industriesTitle}</h2>
+        <p class="text-slate-400 mt-3 max-w-xl">{d.industriesLead}</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {industries.map(ind => {
+          const Tag = ind.href ? 'a' : 'div';
+          const props = ind.href ? { href: ind.href } : {};
+          return (
+            <Tag
+              {...props}
+              class={`fade-in group relative rounded-2xl overflow-hidden ${ind.href ? 'cursor-pointer block focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400' : 'cursor-default'}`}
+              style="min-height: 280px;"
+            >
+              <img
+                src={ind.img}
+                alt={ind.title}
+                class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                loading="lazy"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent"></div>
+              <div class="relative z-10 p-6 h-full flex flex-col justify-between">
+                <span class="self-end text-xs text-white/70 bg-white/10 backdrop-blur-sm px-2.5 py-1 rounded-full border border-white/20">
+                  {ind.tag}
+                </span>
+                <div>
+                  <h3 class="text-xl font-semibold text-white mb-2">{ind.title}</h3>
+                  <p class="text-sm text-white/60 leading-relaxed mb-3">{ind.desc}</p>
+                  {ind.href && (
+                    <span class="inline-flex items-center gap-1 text-sm text-blue-300 font-medium">
+                      Подробнее
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                      </svg>
+                    </span>
+                  )}
+                </div>
+              </div>
+            </Tag>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="py-24">
+    <div class="max-w-6xl mx-auto px-6 lg:px-8">
+      <div class="mb-12">
+        <p class="text-xs font-semibold text-blue-600 uppercase tracking-widest mb-2">{d.stepsEyebrow}</p>
+        <h2 class="text-3xl md:text-4xl font-semibold text-slate-900">{d.stepsTitle}</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {steps.map((step, i) => (
+          <div class="fade-in relative">
+            {i < steps.length - 1 && (
+              <div class="hidden lg:block absolute top-6 left-full w-full h-px bg-gray-200 z-0" style="width: calc(100% - 2rem); left: calc(100% - 1rem);"></div>
+            )}
+            <div class="relative z-10">
+              <span class="text-4xl font-light text-slate-100 font-mono block mb-4">{step.num}</span>
+              <h3 class="font-semibold text-slate-900 mb-2">{step.title}</h3>
+              <p class="text-sm text-slate-500 leading-relaxed">{step.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Parallax CTA -->
+  <ParallaxSection
+    bgImage={parallaxBg}
+    height="380px"
+  >
+    <div class="absolute inset-0 opacity-10 pointer-events-none" aria-hidden="true">
+      <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="dots2" width="40" height="40" patternUnits="userSpaceOnUse">
+            <circle cx="1" cy="1" r="1" fill="white"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#dots2)"/>
+      </svg>
+    </div>
+    <div class="max-w-6xl mx-auto px-6 lg:px-8 py-20 text-center w-full">
+      <p class="text-blue-300 text-xs font-semibold uppercase tracking-widest mb-3">{d.parallaxEyebrow}</p>
+      <h2 class="text-3xl md:text-4xl font-semibold text-white mb-4">{d.parallaxTitle}</h2>
+      <p class="text-white/50 mb-8 max-w-lg mx-auto">
+        {d.parallaxLead}
+      </p>
+      <a
+        href={String(d.parallaxCtaHref)}
+        class="inline-flex items-center gap-2 px-8 py-4 bg-white text-blue-700 font-semibold rounded-lg hover:bg-blue-50 transition-colors text-sm"
+      >
+        {d.parallaxCtaLabel}
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+  </ParallaxSection>
+
+  <!-- Demo form -->
+  <div id="demo" class="max-w-6xl mx-auto px-6 lg:px-8 py-24">
+    <ContactForm
+      variant="demo"
+      title={String(d.formTitle)}
+      subtitle={String(d.formSubtitle)}
+    />
+  </div>
+
+</Layout>

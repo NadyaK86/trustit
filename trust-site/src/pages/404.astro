@@ -1,0 +1,26 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Страница не найдена" titleFull={false} noindex={true}>
+  <section class="py-24 md:py-32 bg-white">
+    <div class="max-w-xl mx-auto px-6 lg:px-8 text-center">
+      <p class="font-display text-6xl md:text-7xl font-bold text-blue-600 mb-4">404</p>
+      <h1 class="font-display text-2xl md:text-3xl font-semibold text-slate-900 mb-3">Страница не найдена</h1>
+      <p class="text-slate-600 mb-10">
+        Возможно, ссылка устарела или страница была перемещена.
+      </p>
+      <div class="flex flex-wrap justify-center gap-3">
+        <a
+          href="/"
+          class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold shadow-sm hover:from-blue-500 hover:to-blue-600 transition-all"
+        >
+          На главную
+        </a>
+        <a href="/contacts" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-200 text-slate-700 font-medium hover:bg-slate-50 transition-colors">
+          Связаться с нами
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>

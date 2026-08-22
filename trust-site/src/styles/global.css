@@ -1,0 +1,213 @@
+@import "tailwindcss";
+
+/* ─── П. 4 ТЗ: High-Tech Corporate — палитра, типографика, UI-базис ─── */
+:root {
+  --color-primary: #1e293b;
+  --color-accent: #2563eb;
+  --color-accent-partner: #0ea5e9;
+  --color-text: #1e293b;
+  --color-muted: #64748b;
+  --color-border: #e2e8f0;
+  --color-bg: #ffffff;
+  --page-bg: #f8fafc;
+
+  --surface-dark: #0f1929;
+  --overlay-parallax: rgba(15, 25, 41, 0.78);
+  --overlay-parallax-strong: rgba(15, 25, 41, 0.88);
+}
+
+@theme {
+  /* П. 4.3: Inter как основной гарнитур (альтернативы в ТЗ — Roboto, Montserrat) */
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --color-surface-dark: #0f1929;
+
+  /* П. 4.2: акцент — электрик-синий (#2563EB / #0098FF); в разметке сохраняем классы blue-* */
+  --color-blue-50: #eff6ff;
+  --color-blue-100: #dbeafe;
+  --color-blue-200: #bfdbfe;
+  --color-blue-300: #93c5fd;
+  --color-blue-400: #60a5fa;
+  --color-blue-500: #3b82f6;
+  --color-blue-600: #2563eb;
+  --color-blue-700: #1d4ed8;
+  --color-blue-800: #1e40af;
+  --color-blue-900: #1e3a8a;
+
+  /* Вторичный акцент SmartPlayer — #0EA5E9 */
+  --color-sky-50: #f0f9ff;
+  --color-sky-100: #e0f2fe;
+  --color-sky-200: #bae6fd;
+  --color-sky-300: #7dd3fc;
+  --color-sky-400: #38bdf8;
+  --color-sky-500: #0ea5e9;
+  --color-sky-600: #0284c7;
+  --color-sky-700: #0369a1;
+}
+
+html {
+  scroll-behavior: auto;
+  overflow-x: clip;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body {
+    animation: none !important;
+  }
+
+  .fade-in {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .fade-in.visible {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .hero-anim-1,
+  .hero-anim-2,
+  .hero-anim-3,
+  .hero-anim-4,
+  .hero-anim-5,
+  .hero-anim-6,
+  .hero-anim-7 {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  background: var(--page-bg);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: color-mix(in srgb, var(--color-accent) 18%, transparent);
+  font-feature-settings: 'tnum' 1, 'lnum' 1;
+  animation: body-enter 0.45s ease-out forwards;
+}
+
+@keyframes body-enter {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.slide-left {
+  opacity: 0;
+  transform: translateX(-28px);
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.slide-left.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+::view-transition-old(root) {
+  animation: 280ms cubic-bezier(0.4, 0, 1, 1) both page-out;
+}
+::view-transition-new(root) {
+  animation: 380ms cubic-bezier(0, 0, 0.2, 1) both page-in;
+}
+
+@keyframes page-out {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-8px); }
+}
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.link-underline {
+  position: relative;
+  display: inline-block;
+}
+.link-underline::after {
+  content: '';
+  position: absolute;
+  left: 0; bottom: -2px;
+  width: 0; height: 2px;
+  background: currentColor;
+  transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.link-underline:hover::after {
+  width: 100%;
+}
+
+/* П. 4.4: карточки — лёгкий подъём, тень */
+.card-hover {
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.35s ease;
+}
+.card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 40px -12px color-mix(in srgb, #2563eb 16%, transparent);
+}
+
+@keyframes hero-up {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero-anim-1 { animation: hero-up 0.65s cubic-bezier(0.22,1,0.36,1) 0.08s both; }
+.hero-anim-2 { animation: hero-up 0.65s cubic-bezier(0.22,1,0.36,1) 0.2s both; }
+.hero-anim-3 { animation: hero-up 0.65s cubic-bezier(0.22,1,0.36,1) 0.32s both; }
+.hero-anim-4 { animation: hero-up 0.65s cubic-bezier(0.22,1,0.36,1) 0.44s both; }
+.hero-anim-5 { animation: hero-up 0.6s cubic-bezier(0.22,1,0.36,1) 0.56s both; }
+.hero-anim-6 { animation: hero-up 0.6s cubic-bezier(0.22,1,0.36,1) 0.68s both; }
+.hero-anim-7 { animation: hero-up 0.6s cubic-bezier(0.22,1,0.36,1) 0.9s both; }
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+/* Базовая стилизация markdown-тела (новости/портфолио): картинки и отступы.
+   Плагин @tailwindcss/typography не подключён — задаём минимум вручную. */
+.prose img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  margin: 1.5rem 0;
+}
+.prose p { margin: 0 0 1rem; }
+.prose h2 { font-size: 1.5rem; margin: 2rem 0 0.75rem; }
+.prose h3 { font-size: 1.25rem; margin: 1.5rem 0 0.5rem; }
+.prose ul { list-style: disc; padding-left: 1.25rem; margin: 0 0 1rem; }
+.prose ol { list-style: decimal; padding-left: 1.25rem; margin: 0 0 1rem; }
+.prose a { text-decoration: underline; }

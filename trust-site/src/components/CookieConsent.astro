@@ -1,0 +1,66 @@
+---
+/**
+ * Баннер согласия на cookie/аналитику (99-З о ПДн).
+ * Выбор хранится в localStorage 'trust-cookie-consent' = 'accepted' | 'rejected'.
+ * Аналитика (Я.Метрика/gtag) активируется только при 'accepted'.
+ */
+---
+
+<div
+  id="trust-cookie"
+  class="fixed bottom-5 left-5 z-[70] max-w-sm hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_20px_50px_-20px_rgba(15,23,42,0.35)]"
+  role="dialog"
+  aria-live="polite"
+  aria-label="Согласие на использование cookie"
+>
+  <p class="text-sm text-slate-600 leading-relaxed">
+    Мы используем cookie и веб-аналитику, чтобы улучшать сайт. Подробнее — в
+    <a href="/privacy" class="text-blue-600 hover:underline">Политике обработки персональных данных</a>.
+  </p>
+  <div class="mt-4 flex gap-2">
+    <button
+      type="button"
+      data-cookie-accept
+      class="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm font-semibold hover:from-blue-500 hover:to-blue-600 transition-all"
+    >
+      Принять
+    </button>
+    <button
+      type="button"
+      data-cookie-reject
+      class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-50 transition-colors"
+    >
+      Только необходимые
+    </button>
+  </div>
+</div>
+
+<script>
+  const KEY = 'trust-cookie-consent';
+
+  function setupCookieBanner() {
+    const el = document.getElementById('trust-cookie');
+    if (!el) return;
+    let choice: string | null = null;
+    try { choice = localStorage.getItem(KEY); } catch {}
+
+    if (choice === 'accepted' || choice === 'rejected') {
+      el.classList.add('hidden');
+      return;
+    }
+    el.classList.remove('hidden');
+
+    const save = (value: 'accepted' | 'rejected') => {
+      try { localStorage.setItem(KEY, value); } catch {}
+      el.classList.add('hidden');
+      // здесь можно инициализировать аналитику при value === 'accepted'
+    };
+
+    el.querySelector('[data-cookie-accept]')?.addEventListener('click', () => save('accepted'));
+    el.querySelector('[data-cookie-reject]')?.addEventListener('click', () => save('rejected'));
+  }
+
+  document.addEventListener('astro:page-load', setupCookieBanner);
+  if (document.readyState !== 'loading') setupCookieBanner();
+  else document.addEventListener('DOMContentLoaded', setupCookieBanner, { once: true });
+</script>

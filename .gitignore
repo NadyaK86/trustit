@@ -1,0 +1,12 @@
+node_modules/
+.env
+.env.production
+*.log
+.DS_Store
+dist/
+.astro/
+.wrangler/
+# заявки содержат персональные данные (99-З) — не коммитим
+admin/data/
+# исходное ТЗ
+*.docx

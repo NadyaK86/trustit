@@ -1,0 +1,136 @@
+---
+import { getEntry } from 'astro:content';
+import { getSiteSettings } from '../lib/site-settings';
+
+const entry = await getEntry('site', 'navigation');
+const data = (entry?.data ?? {}) as Record<string, any>;
+const settings = await getSiteSettings();
+
+const nav = (data.items as Array<{ label: string; href: string }> | undefined) ?? [
+  { label: 'Каталог', href: '/catalog' },
+  { label: 'Решения', href: '/solutions' },
+  { label: 'Услуги', href: '/services' },
+  { label: 'Портфолио', href: '/portfolio' },
+  { label: 'О компании', href: '/about' },
+  { label: 'Новости', href: '/news' },
+  { label: 'Контакты', href: '/contacts' },
+];
+
+const brandName = String(data.brandName ?? 'ТрастИнкомТрэйд');
+const brandLetter = String(data.brandLetter ?? 'Т');
+const contacts = (data.contacts ?? {}) as Record<string, string>;
+// мессенджеры — из общих «Настроек сайта» (единый источник); navigation может переопределить
+const whatsapp = contacts.whatsapp ?? settings.whatsapp;
+const telegram = contacts.telegram ?? settings.telegram;
+const callbackHref = contacts.callbackHref ?? '/contacts#callback';
+const callbackLabel = contacts.callbackLabel ?? 'Перезвоните мне';
+
+const currentPath = Astro.url.pathname;
+---
+
+<header class="fixed top-0 left-0 right-0 z-50 pt-[max(1rem,env(safe-area-inset-top))] px-4 md:px-6 pointer-events-none">
+  <div class="max-w-6xl mx-auto pointer-events-auto">
+    <div
+      class="flex items-center justify-between h-[3.25rem] md:h-14 px-4 md:px-6 rounded-xl border border-slate-200/90 bg-white/90 backdrop-blur-xl shadow-[0_8px_30px_-12px_rgba(15,23,42,0.1)]"
+    >
+      <a href="/" class="flex items-center gap-3 group shrink-0">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-md shadow-blue-900/25 ring-2 ring-white">
+          <span class="text-white font-bold text-sm font-display">{brandLetter}</span>
+        </div>
+        <span class="font-display font-semibold text-slate-900 text-sm tracking-tight hidden sm:inline">{brandName}</span>
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-0.5 min-w-0">
+        {nav.map(item => (
+          <a
+            href={item.href}
+            class={`px-2 py-1.5 rounded-lg text-[13px] font-medium transition-colors ${
+              currentPath === item.href || currentPath.startsWith(item.href + '/')
+                ? 'text-blue-700 bg-blue-50'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
+            }`}
+          >
+            {item.label}
+          </a>
+        ))}
+      </nav>
+
+      <div class="hidden md:flex items-center gap-2">
+        <a
+          href={whatsapp}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="p-2 rounded-lg text-slate-500 hover:text-emerald-600 hover:bg-slate-100/80 transition-colors"
+          title="WhatsApp"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          </svg>
+        </a>
+        <a
+          href={telegram}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="p-2 rounded-lg text-slate-500 hover:text-blue-600 hover:bg-slate-100/80 transition-colors"
+          title="Telegram"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+          </svg>
+        </a>
+        <a
+          href={callbackHref}
+          class="ml-1 px-4 py-2 rounded-xl bg-[#1e293b] text-white text-sm font-semibold hover:bg-[#0f172a] transition-colors shadow-sm"
+        >
+          {callbackLabel}
+        </a>
+      </div>
+
+      <button id="menu-toggle" class="lg:hidden p-2 rounded-lg text-slate-700 hover:bg-slate-100" aria-label="Меню">
+        <svg id="icon-open" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+        <svg id="icon-close" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <div
+      id="mobile-menu"
+      class="hidden lg:hidden mt-2 rounded-xl border border-slate-200/90 bg-white/95 backdrop-blur-xl shadow-xl p-4"
+    >
+      <nav class="flex flex-col gap-1">
+        {nav.map(item => (
+          <a
+            href={item.href}
+            class="min-h-[44px] px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-blue-50 hover:text-blue-800 transition-colors flex items-center"
+          >
+            {item.label}
+          </a>
+        ))}
+        <a
+          href={callbackHref}
+          class="mt-2 min-h-[48px] px-4 py-3 rounded-xl bg-[#1e293b] text-white text-sm font-semibold text-center flex items-center justify-center"
+        >
+          {callbackLabel}
+        </a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<div class="h-[4.5rem] md:h-[5rem]" aria-hidden="true"></div>
+
+<script>
+  const toggle = document.getElementById('menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+  const iconOpen = document.getElementById('icon-open');
+  const iconClose = document.getElementById('icon-close');
+
+  toggle?.addEventListener('click', () => {
+    menu?.classList.toggle('hidden');
+    iconOpen?.classList.toggle('hidden');
+    iconClose?.classList.toggle('hidden');
+  });
+</script>

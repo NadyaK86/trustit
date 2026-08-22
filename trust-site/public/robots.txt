@@ -1,0 +1,5 @@
+# Домен должен совпадать с site в astro.config.mjs / PUBLIC_SITE_URL
+User-agent: *
+Allow: /
+
+Sitemap: https://trustit.by/sitemap-index.xml

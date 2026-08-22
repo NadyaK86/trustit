@@ -1,0 +1,50 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getEntry } from 'astro:content';
+import { getSiteSettings } from '../lib/site-settings';
+
+const entry = await getEntry('site', 'privacy');
+if (!entry) throw new Error('Добавьте src/content/site/privacy.md');
+
+const d = entry.data as Record<string, unknown>;
+const sections = (d.sections as Array<{ heading: string; text: string }>) ?? [];
+const updated = d.updated ? String(d.updated) : '';
+// Реквизиты оператора — из общих «Настроек сайта» (единый источник)
+const s = await getSiteSettings();
+---
+
+<Layout
+  title={String(d.title)}
+  description={d.description ? String(d.description) : undefined}
+  titleFull={true}
+>
+  <section class="border-b border-slate-100 py-16 md:py-20 bg-white">
+    <div class="max-w-3xl mx-auto px-6 lg:px-8">
+      <h1 class="font-display text-3xl md:text-4xl font-semibold text-slate-900 tracking-tight mb-4">
+        {String(d.title)}
+      </h1>
+      {updated && (
+        <p class="text-sm text-slate-400 mb-8">Редакция от {updated}</p>
+      )}
+      {d.intro && (
+        <p class="text-slate-600 text-base leading-relaxed mb-10">{String(d.intro)}</p>
+      )}
+
+      <div class="space-y-8">
+        {sections.map((s) => (
+          <div>
+            <h2 class="font-display text-lg font-semibold text-slate-900 mb-2">{s.heading}</h2>
+            <p class="text-slate-600 leading-relaxed">{s.text}</p>
+          </div>
+        ))}
+      </div>
+
+      <div class="mt-12 pt-8 border-t border-slate-100 text-sm text-slate-500 space-y-1">
+        <p>{s.companyName}{s.companyUnp ? `, ${s.companyUnp}` : ''}</p>
+        <p>{s.companyAddress}</p>
+        <p><a href={`mailto:${s.companyEmail}`} class="text-blue-600 hover:underline">{s.companyEmail}</a></p>
+        <p><a href={s.companyPhoneHref} class="text-blue-600 hover:underline">{s.companyPhone}</a></p>
+      </div>
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,45 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getEntry } from 'astro:content';
+
+const entry = await getEntry('site', 'thank-you');
+if (!entry) throw new Error('Добавьте src/content/site/thank-you.md');
+
+const d = entry.data as Record<string, unknown>;
+const titles = d.titles as Record<string, string>;
+const bodies = d.bodies as Record<string, string>;
+
+const form = Astro.url.searchParams.get('form') || '';
+const title = titles[form] ?? String(d.defaultTitle);
+const body = bodies[form] ?? String(d.defaultBody);
+---
+
+<Layout
+  title={String(d.title)}
+  description={d.description ? String(d.description) : undefined}
+  titleFull={true}
+  noindex={true}
+>
+  <section class="border-b border-slate-100 py-16 md:py-20 bg-white">
+    <div class="max-w-2xl mx-auto px-6 lg:px-8 text-center">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-green-500/10 text-green-600 mb-8 ring-1 ring-green-500/20">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+      <h1 class="font-display text-3xl md:text-4xl font-semibold text-slate-900 tracking-tight mb-4">{title}</h1>
+      <p class="text-slate-600 text-base leading-relaxed mb-10">{body}</p>
+      <div class="flex flex-wrap justify-center gap-3">
+        <a
+          href="/"
+          class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold shadow-sm hover:from-blue-500 hover:to-blue-600 transition-all"
+        >
+          {d.homeLabel}
+        </a>
+        <a href={String(d.contactsHref)} class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-200 text-slate-700 font-medium hover:bg-slate-50 transition-colors">
+          {d.contactsLabel}
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>

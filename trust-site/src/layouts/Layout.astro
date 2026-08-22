@@ -1,0 +1,240 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import FloatingLead from '../components/FloatingLead.astro';
+import CookieConsent from '../components/CookieConsent.astro';
+import { ClientRouter } from 'astro:transitions';
+
+interface Props {
+  title: string;
+  description?: string;
+  /** Полный текст <title> без суффикса «| ТрастИнкомТрэйд» */
+  titleFull?: boolean;
+  canonical?: string;
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description = 'ТрастИнкомТрэйд — системная интеграция, аудиовизуальные решения, поставка оборудования в Беларуси.',
+  titleFull = false,
+  canonical,
+  ogImage,
+  ogType = 'website',
+  noindex = false,
+} = Astro.props;
+
+const siteUrl = Astro.site ?? new URL('https://trustit.by/');
+
+const canonicalURL = canonical
+  ? canonical.startsWith('http')
+    ? new URL(canonical)
+    : new URL(canonical.replace(/^\//, ''), siteUrl)
+  : new URL(Astro.url.pathname, siteUrl);
+
+function absoluteOgImage(url: string | undefined): string {
+  if (!url) return new URL('/preview-hero.jpg', siteUrl).href;
+  if (url.startsWith('http')) return url;
+  const path = url.startsWith('/') ? url : `/${url}`;
+  return new URL(path, siteUrl).href;
+}
+
+const ogImageUrl = absoluteOgImage(ogImage);
+const pageTitle = titleFull ? title : `${title} | ТрастИнкомТрэйд`;
+
+const orgJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'ООО «ТрастИнкомТрэйд»',
+  url: siteUrl.href,
+  logo: new URL('/favicon.svg', siteUrl).href,
+};
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content={description} />
+    <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
+    <meta name="theme-color" content="#2563eb" />
+    <link rel="canonical" href={canonicalURL.href} />
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content="ТрастИнкомТрэйд" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL.href} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:secure_url" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:alt" content="ТрастИнкомТрэйд — системная интеграция и AV-решения" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <title>{pageTitle}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap&subset=cyrillic,cyrillic-ext,latin"
+      rel="stylesheet"
+    />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <script type="application/ld+json" set:html={JSON.stringify(orgJsonLd)} />
+    <slot name="head" />
+    <ClientRouter />
+  </head>
+  <body class="antialiased">
+    <Header />
+    <main class="min-h-[60vh]">
+      <slot />
+    </main>
+    <Footer />
+    <FloatingLead />
+    <CookieConsent />
+
+    <script>
+      import Lenis from 'lenis';
+      import { gsap } from 'gsap';
+      import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+      gsap.registerPlugin(ScrollTrigger);
+
+      let lenis: InstanceType<typeof Lenis> | null = null;
+
+      // ─── Lenis smooth scroll ─────────────────────────────────
+      function initLenis() {
+        lenis?.destroy();
+        lenis = new Lenis({
+          duration: 1.4,
+          easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+          smoothWheel: true,
+          touchMultiplier: 1.5,
+        });
+
+        // Синхронизируем GSAP ScrollTrigger с Lenis
+        lenis.on('scroll', () => ScrollTrigger.update());
+
+        gsap.ticker.add((time) => {
+          lenis?.raf(time * 1000);
+        });
+        gsap.ticker.lagSmoothing(0);
+      }
+
+      // ─── Parallax через GSAP ScrollTrigger ───────────────────
+      function initParallax() {
+        // Убираем старые триггеры
+        ScrollTrigger.getAll()
+          .filter(t => t.vars.__parallax)
+          .forEach(t => t.kill());
+
+        document.querySelectorAll<HTMLElement>('[data-parallax-bg]').forEach(bg => {
+          const section = bg.closest<HTMLElement>('[data-parallax-section]');
+          if (!section) return;
+
+          const strong = bg.hasAttribute('data-parallax-strong');
+          const y = strong ? 22 : 15;
+
+          gsap.fromTo(
+            bg,
+            { yPercent: -y },
+            {
+              yPercent: y,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: section,
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: true,
+                vars: { __parallax: true },
+              },
+            }
+          );
+        });
+      }
+
+      // ─── Scroll-reveal (fade-in) через GSAP ──────────────────
+      function initAnimations() {
+        // Убираем старые триггеры
+        ScrollTrigger.getAll()
+          .filter(t => t.vars.__reveal)
+          .forEach(t => t.kill());
+
+        // Сбрасываем состояние
+        document.querySelectorAll<HTMLElement>('.fade-in').forEach(el => {
+          el.classList.remove('visible');
+        });
+
+        // Группируем по родителю для stagger
+        const parents = new Set(
+          Array.from(document.querySelectorAll<HTMLElement>('.fade-in'))
+            .map(el => el.parentElement)
+            .filter(Boolean)
+        );
+
+        parents.forEach(parent => {
+          const children = parent!.querySelectorAll<HTMLElement>('.fade-in');
+          gsap.fromTo(children,
+            { opacity: 0, y: 32 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.7,
+              ease: 'power3.out',
+              stagger: 0.1,
+              scrollTrigger: {
+                trigger: parent,
+                start: 'top 88%',
+                toggleActions: 'play none none none',
+                vars: { __reveal: true },
+              },
+            }
+          );
+        });
+      }
+
+      function shouldUseLenis() {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
+        if (window.matchMedia('(max-width: 768px)').matches) return false;
+        return true;
+      }
+
+      // ─── Lifecycle ───────────────────────────────────────────
+      function boot() {
+        if (shouldUseLenis()) initLenis();
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          document.querySelectorAll<HTMLElement>('.fade-in').forEach(el => el.classList.add('visible'));
+          return;
+        }
+        initParallax();
+        initAnimations();
+      }
+
+      document.addEventListener('astro:page-load', boot);
+
+      document.addEventListener('astro:before-preparation', () => {
+        lenis?.destroy();
+        lenis = null;
+        ScrollTrigger.getAll().forEach(t => t.kill());
+      });
+
+      if (document.readyState !== 'loading') {
+        boot();
+      } else {
+        document.addEventListener('DOMContentLoaded', boot, { once: true });
+      }
+    </script>
+  </body>
+</html>

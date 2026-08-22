@@ -1,0 +1,49 @@
+---
+// Секция с parallax-фоном. Фоновый слой движется медленнее контента при скролле.
+interface Props {
+  id?: string;
+  bgColor?: string;   // CSS-цвет/градиент как заглушка (заменить на img src)
+  bgImage?: string;   // URL реального фото (опционально)
+  overlay?: string;   // CSS overlay поверх фото для читаемости текста
+  height?: string;    // CSS height секции
+  class?: string;
+}
+
+const {
+  id,
+  bgColor = 'linear-gradient(155deg, #1e3a8a 0%, #0f1929 45%, #17171c 100%)',
+  bgImage,
+  overlay = 'var(--overlay-parallax)',
+  height = 'auto',
+  class: className = '',
+} = Astro.props;
+
+const uid = `px-${Math.random().toString(36).slice(2, 7)}`;
+---
+
+<section
+  {id}
+  data-parallax-section
+  class={`relative overflow-hidden ${className}`}
+  style={height !== 'auto' ? `min-height: ${height}` : ''}
+>
+  <!-- Parallax background -->
+  <div
+    class="parallax-bg absolute inset-0 w-full will-change-transform"
+    data-parallax-bg={uid}
+    style="height: 140%; top: -20%;"
+  >
+    {bgImage
+      ? <img src={bgImage} alt="" class="w-full h-full object-cover" loading="lazy" decoding="async" />
+      : <div class="w-full h-full" style={`background: ${bgColor};`}></div>
+    }
+  </div>
+
+  <!-- Overlay -->
+  <div class="absolute inset-0" style={`background: ${overlay};`}></div>
+
+  <!-- Content -->
+  <div class="relative z-10">
+    <slot />
+  </div>
+</section>

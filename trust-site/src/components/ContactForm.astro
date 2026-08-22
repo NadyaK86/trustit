@@ -1,0 +1,315 @@
+---
+/**
+ * П. 5 ТЗ: лидогенерация — варианты форм и единая отправка.
+ * Приоритет: собственный бэкенд админки (PUBLIC_LEAD_ENDPOINT, данные не уходят за рубеж — 99-З о ПДн),
+ * иначе fallback на Formspree (PUBLIC_FORMSPREE_URL). Опц. reCAPTCHA v3 (PUBLIC_RECAPTCHA_SITE_KEY).
+ */
+type Variant = 'full' | 'estimate' | 'demo' | 'callback';
+
+interface Props {
+  variant?: Variant;
+  title?: string;
+  subtitle?: string;
+  id?: string;
+  /** Компактная вёрстка (модалка FAB) */
+  compact?: boolean;
+}
+
+const {
+  variant = 'estimate',
+  title = 'Получить расчёт проекта',
+  subtitle = 'Оставьте заявку — ответим в течение рабочего дня.',
+  id: sectionId,
+  compact = false,
+} = Astro.props;
+
+const fid = `trust-${Math.random().toString(36).slice(2, 11)}`;
+
+const leadEndpoint = import.meta.env.PUBLIC_LEAD_ENDPOINT ?? '';
+const formspreeUrl = import.meta.env.PUBLIC_FORMSPREE_URL ?? '';
+const recaptchaSiteKey = import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY ?? '';
+const yandexMetrikaId = import.meta.env.PUBLIC_YANDEX_METRIKA_ID ?? '';
+
+const subjects: Record<Variant, string> = {
+  full: 'Сообщение с сайта (контакты)',
+  estimate: 'Запрос расчёта проекта',
+  demo: 'Запрос демо-доступа SmartPlayer',
+  callback: 'Перезвоните мне',
+};
+
+const inputClass =
+  'w-full px-4 py-3 border border-slate-200 rounded-xl text-sm bg-slate-50/80 focus:outline-none focus:ring-2 focus:ring-blue-500/25 focus:border-blue-500 transition';
+---
+
+<section
+  id={sectionId}
+  class:list={[
+    'relative overflow-hidden bg-white border border-slate-200/90 shadow-[0_20px_50px_-24px_rgba(15,23,42,0.12)]',
+    compact ? 'rounded-2xl p-6' : 'rounded-2xl p-8 md:p-12',
+  ]}
+  data-trust-form-wrap
+>
+  {!compact && (
+    <div class="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-blue-100/60 to-transparent rounded-bl-[80px] pointer-events-none" aria-hidden="true"></div>
+  )}
+  <div class:list={['mx-auto relative', compact ? 'max-w-md' : 'max-w-2xl']}>
+    <h2 class:list={['font-display font-semibold text-slate-900 mb-2', compact ? 'text-xl' : 'text-2xl md:text-3xl']}>
+      {title}
+    </h2>
+    <p class="text-slate-500 mb-6 text-sm">{subtitle}</p>
+
+    <form
+      id={fid}
+      class="space-y-4 trust-form"
+      data-trust-form
+      data-form-type={variant}
+      data-ym-goal={`form_${variant}`}
+      data-lead-endpoint={leadEndpoint}
+      data-formspree={formspreeUrl}
+      data-recaptcha={recaptchaSiteKey}
+      data-ym-id={yandexMetrikaId}
+      novalidate
+    >
+      <input type="hidden" name="_subject" value={subjects[variant]} />
+      <input type="hidden" name="form_type" value={variant} />
+      {/* honeypot — скрытое поле против ботов; реальный пользователь его не видит */}
+      <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true" />
+      <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true" />
+
+      {variant === 'full' && (
+        <>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1" for={`${fid}-name`}>Имя *</label>
+              <input type="text" id={`${fid}-name`} name="name" required maxlength="120" placeholder="Иван Иванов" class={inputClass} autocomplete="name" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1" for={`${fid}-email`}>Email *</label>
+              <input type="email" id={`${fid}-email`} name="email" required placeholder="email@company.by" class={inputClass} autocomplete="email" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1" for={`${fid}-phone`}>Телефон *</label>
+            <input type="tel" id={`${fid}-phone`} name="phone" required placeholder="+375 (XX) XXX-XX-XX" class={inputClass} autocomplete="tel" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1" for={`${fid}-topic`}>Тема *</label>
+            <input type="text" id={`${fid}-topic`} name="topic" required maxlength="200" placeholder="Тема обращения" class={inputClass} />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1" for={`${fid}-message`}>Сообщение</label>
+            <textarea id={`${fid}-message`} name="message" rows={4} placeholder="Текст сообщения..." class={`${inputClass} resize-none`}></textarea>
+          </div>
+        </>
+      )}
+
+      {variant === 'estimate' && (
+        <>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1" for={`${fid}-name`}>Имя *</label>
+              <input type="text" id={`${fid}-name`} name="name" required maxlength="120" placeholder="Иван Иванов" class={inputClass} autocomplete="name" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1" for={`${fid}-company`}>Компания</label>
+              <input type="text" id={`${fid}-company`} name="company" maxlength="200" placeholder="ООО «Название»" class={inputClass} />
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1" for={`${fid}-phone`}>Телефон *</label>
+              <input type="tel" id={`${fid}-phone`} name="phone" required placeholder="+375 (XX) XXX-XX-XX" class={inputClass} autocomplete="tel" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1" for={`${fid}-email`}>Email</label>
+              <input type="email" id={`${fid}-email`} name="email" placeholder="email@company.by" class={inputClass} autocomplete="email" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1" for={`${fid}-task`}>Описание задачи</label>
+            <textarea id={`${fid}-task`} name="task" rows={4} placeholder="Опишите проект или приложите ссылку на ТЗ..." class={`${inputClass} resize-none`}></textarea>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1" for={`${fid}-budget`}>Бюджет (необязательно)</label>
+            <input type="text" id={`${fid}-budget`} name="budget" maxlength="120" placeholder="Например: до 10 000 USD, поэтапно" class={inputClass} />
+          </div>
+        </>
+      )}
+
+      {variant === 'demo' && (
+        <>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1" for={`${fid}-name`}>Имя *</label>
+              <input type="text" id={`${fid}-name`} name="name" required maxlength="120" class={inputClass} autocomplete="name" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1" for={`${fid}-company`}>Компания</label>
+              <input type="text" id={`${fid}-company`} name="company" maxlength="200" class={inputClass} />
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1" for={`${fid}-email`}>Email *</label>
+              <input type="email" id={`${fid}-email`} name="email" required class={inputClass} autocomplete="email" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1" for={`${fid}-phone`}>Телефон *</label>
+              <input type="tel" id={`${fid}-phone`} name="phone" required class={inputClass} autocomplete="tel" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1" for={`${fid}-screens`}>Количество экранов (необязательно)</label>
+            <input type="number" id={`${fid}-screens`} name="screens" min="1" max="99999" placeholder="Например: 12" class={inputClass} />
+          </div>
+        </>
+      )}
+
+      {variant === 'callback' && (
+        <>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1" for={`${fid}-name`}>Имя *</label>
+            <input type="text" id={`${fid}-name`} name="name" required maxlength="120" class={inputClass} autocomplete="name" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1" for={`${fid}-phone`}>Телефон *</label>
+            <input type="tel" id={`${fid}-phone`} name="phone" required class={inputClass} autocomplete="tel" />
+          </div>
+        </>
+      )}
+
+      <label class="flex items-start gap-2.5 text-xs text-slate-500 cursor-pointer select-none">
+        <input
+          type="checkbox"
+          name="consent"
+          required
+          class="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-blue-600 focus:ring-blue-500/25 trust-form-consent"
+        />
+        <span>
+          Я соглашаюсь на обработку персональных данных в соответствии с
+          <a href="/privacy" target="_blank" rel="noopener" class="text-blue-600 hover:underline">Политикой обработки персональных данных</a>.
+        </span>
+      </label>
+
+      <div class:list={['flex items-start gap-3', compact && 'flex-col']}>
+        <button
+          type="submit"
+          class="px-8 py-3.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm font-semibold rounded-xl hover:from-blue-500 hover:to-blue-600 transition-all shadow-lg shadow-blue-900/15 disabled:opacity-50 trust-form-submit"
+        >
+          Отправить
+        </button>
+      </div>
+
+      <p class="trust-form-success hidden text-green-600 text-sm font-medium" role="status"></p>
+      <p class="trust-form-error hidden text-red-500 text-sm" role="alert"></p>
+    </form>
+  </div>
+</section>
+
+<script>
+  // Hoisted module-скрипт: Astro транспилирует и бандлит его один раз на страницу.
+  // Конфиг берём из data-* атрибутов формы (а не из define:vars), привязку выполняем
+  // на astro:page-load — корректно работает с view transitions (ClientRouter).
+  function loadRecaptcha(siteKey: string): Promise<any> {
+    if (!siteKey) return Promise.resolve(null);
+    const w = window as any;
+    return new Promise((resolve) => {
+      if (typeof w.grecaptcha !== 'undefined') return resolve(w.grecaptcha);
+      const s = document.createElement('script');
+      s.src = 'https://www.google.com/recaptcha/api.js?render=' + siteKey;
+      s.async = true;
+      s.onload = () => resolve(w.grecaptcha);
+      s.onerror = () => resolve(null);
+      document.head.appendChild(s);
+    });
+  }
+
+  function bindForm(form: HTMLFormElement) {
+    if (form.dataset.trustBound === '1') return;
+    form.dataset.trustBound = '1';
+
+    const leadEndpoint = form.dataset.leadEndpoint || '';
+    const formspreeUrl = form.dataset.formspree || '';
+    const recaptchaSiteKey = form.dataset.recaptcha || '';
+    const yandexMetrikaId = form.dataset.ymId || '';
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = form.querySelector('.trust-form-submit') as HTMLButtonElement | null;
+      const okEl = form.querySelector('.trust-form-success');
+      const errEl = form.querySelector('.trust-form-error');
+      okEl?.classList.add('hidden');
+      errEl?.classList.add('hidden');
+
+      const consentEl = form.querySelector('.trust-form-consent') as HTMLInputElement | null;
+      if (consentEl && !consentEl.checked) {
+        if (errEl) { errEl.textContent = 'Поставьте отметку о согласии на обработку персональных данных.'; errEl.classList.remove('hidden'); }
+        return;
+      }
+      if (!leadEndpoint && !formspreeUrl) {
+        if (errEl) { errEl.textContent = 'Форма не настроена: задайте PUBLIC_LEAD_ENDPOINT или PUBLIC_FORMSPREE_URL.'; errEl.classList.remove('hidden'); }
+        return;
+      }
+      if (!btn) return;
+
+      const prev = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Отправляем...';
+
+      try {
+        let token = '';
+        const g = await loadRecaptcha(recaptchaSiteKey);
+        if (g && recaptchaSiteKey) {
+          await new Promise<void>((r) => g.ready(r));
+          token = await g.execute(recaptchaSiteKey, { action: 'lead_form' });
+        }
+
+        const fd = new FormData(form);
+        if (token) fd.append('g-recaptcha-response', token);
+
+        let res: Response;
+        if (leadEndpoint) {
+          const payload: Record<string, unknown> = {};
+          fd.forEach((v, k) => { payload[k] = v; });
+          payload.consent = consentEl ? consentEl.checked : true;
+          res = await fetch(leadEndpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify(payload),
+          });
+        } else {
+          res = await fetch(formspreeUrl, { method: 'POST', body: fd, headers: { Accept: 'application/json' } });
+        }
+
+        if (res.ok) {
+          const type = form.getAttribute('data-form-type') || 'estimate';
+          let analyticsOk = false;
+          try { analyticsOk = localStorage.getItem('trust-cookie-consent') === 'accepted'; } catch {}
+          if (analyticsOk) {
+            const w = window as any;
+            const ymId = yandexMetrikaId ? Number(yandexMetrikaId) : NaN;
+            if (!Number.isNaN(ymId) && ymId > 0 && w.ym) w.ym(ymId, 'reachGoal', 'form_' + type);
+            if (w.gtag) w.gtag('event', 'form_submit', { form_type: type });
+          }
+          window.location.href = '/thank-you?form=' + encodeURIComponent(type);
+        } else {
+          const err = await res.json().catch(() => null);
+          throw new Error((err && err.error) || 'send failed');
+        }
+      } catch {
+        if (errEl) { errEl.textContent = 'Не удалось отправить. Позвоните нам или напишите в мессенджер.'; errEl.classList.remove('hidden'); }
+      } finally {
+        btn.disabled = false;
+        btn.textContent = prev || 'Отправить';
+      }
+    });
+  }
+
+  function bindAllForms() {
+    document.querySelectorAll<HTMLFormElement>('[data-trust-form]').forEach(bindForm);
+  }
+
+  document.addEventListener('astro:page-load', bindAllForms);
+  if (document.readyState !== 'loading') bindAllForms();
+  else document.addEventListener('DOMContentLoaded', bindAllForms, { once: true });
+</script>

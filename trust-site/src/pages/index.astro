@@ -1,0 +1,461 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ContactForm from '../components/ContactForm.astro';
+import ParallaxSection from '../components/ParallaxSection.astro';
+import { homeServiceIcons } from '../data/home-icons';
+import { siteImg } from '../lib/site-images';
+import { getEntry } from 'astro:content';
+
+const entry = await getEntry('site', 'home');
+if (!entry) throw new Error('Добавьте src/content/site/home.md');
+
+const d = entry.data as Record<string, unknown>;
+
+const directions = (d.directions as Array<Record<string, string>>).map((row) => ({
+  ...row,
+  img: siteImg(row.imageKey),
+}));
+
+const homeServices = (d.homeServices as Array<{ iconId: string; title: string; desc: string; href: string }>).map(
+  (s) => ({
+    ...s,
+    icon: homeServiceIcons[s.iconId] ?? '',
+  })
+);
+
+const portfolio = (d.portfolio as Array<Record<string, unknown>>).map((p) => ({
+  ...p,
+  img: siteImg(String(p.imageKey)),
+}));
+
+const homeNews = (d.homeNews as Array<Record<string, string>>).map((n) => ({
+  ...n,
+  img: siteImg(n.imageKey),
+}));
+
+const heroMetrics = d.heroMetrics as Array<{ target: number; suffix: string; label: string }>;
+const statsMetrics = d.statsMetrics as Array<{ target: number; suffix: string; label: string; sub: string }>;
+
+const parallaxPromo = siteImg(String(d.parallaxPromoImageKey ?? 'parallaxSmartplayerPromo'));
+const parallaxCta = siteImg(String(d.parallaxCtaImageKey ?? 'parallaxCta'));
+
+const title = String(d.title ?? 'Главная');
+const description = String(d.description ?? '');
+---
+
+<Layout {title} {description}>
+  <link
+    slot="head"
+    rel="preload"
+    as="image"
+    href="/images/hero.webp"
+    fetchpriority="high"
+  />
+
+  <section
+    class="relative overflow-hidden text-white min-h-[100svh]"
+    data-parallax-section
+  >
+    <!-- Фон: parallax (GSAP в Layout — слой «уезжает» при скролле) -->
+    <div
+      class="parallax-bg pointer-events-none absolute inset-0 z-0 w-full will-change-transform"
+      data-parallax-bg
+      data-parallax-strong
+      style="height: 145%; top: -22.5%;"
+    >
+      <img
+        src="/images/hero.webp"
+        alt=""
+        width="1920"
+        height="1080"
+        class="h-full min-h-full w-full object-cover object-center"
+        fetchpriority="high"
+        decoding="async"
+      />
+    </div>
+    <div
+      class="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-r from-[#0F1929]/95 via-[#0F1929]/78 to-[#0F1929]/55"
+      aria-hidden="true"
+    ></div>
+    <div class="pointer-events-none absolute inset-0 z-[1] bg-[#0F1929]/25" aria-hidden="true"></div>
+    <div class="pointer-events-none absolute inset-0 z-[1] opacity-[0.035]" aria-hidden="true">
+      <svg class="h-full w-full">
+        <defs>
+          <pattern id="hero-grid" width="64" height="64" patternUnits="userSpaceOnUse">
+            <path d="M64 0H0v64" fill="none" stroke="white" stroke-width="0.4" />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#hero-grid)" />
+      </svg>
+    </div>
+
+    <div class="relative z-10 mx-auto flex w-full max-w-6xl min-h-[100svh] items-center px-6 py-24 lg:px-8 [isolation:isolate]">
+      <div class="w-full grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        <div class="lg:col-span-7 max-w-2xl">
+          <a
+            href={String(d.heroPartnerHref ?? '/solutions/digital-signage')}
+            class="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-sky-300/95 mb-8 px-4 py-2 rounded-full border border-sky-400/35 bg-sky-500/10 hover:bg-sky-500/15 transition-colors"
+          >
+            <span class="w-1.5 h-1.5 rounded-full bg-sky-400 shadow-[0_0_12px_rgba(56,189,248,0.75)]"></span>
+            {d.heroPartnerLabel ?? d.heroBadge}
+          </a>
+
+          <h1 class="font-display text-[2.4rem] sm:text-5xl md:text-[3.3rem] xl:text-[3.5rem] font-bold leading-[1.05] tracking-tight mb-7 text-white">
+            {d.heroTitleLine1}<br />
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-white to-blue-200">{d.heroTitleGradient}</span>
+          </h1>
+
+          <p class="text-lg text-slate-400 leading-relaxed max-w-xl">
+            {d.heroLead}
+          </p>
+        </div>
+
+        <div class="lg:col-span-5">
+          <p class="text-[11px] font-semibold text-sky-300/80 uppercase tracking-[0.2em] mb-4">{d.directionsSectionTitle}</p>
+          <div class="grid grid-cols-1 gap-2">
+            {directions.map((it) => (
+              <a
+                href={it.href}
+                class="group flex items-center justify-between gap-4 px-4 py-3 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 hover:border-sky-300/40 transition-all"
+              >
+                <div>
+                  <div class="text-[10px] font-mono text-white/40 uppercase tracking-wider">{it.num}</div>
+                  <div class="font-semibold text-white group-hover:text-sky-300 transition-colors">{it.title}</div>
+                  <div class="text-xs text-white/55 mt-0.5">{it.tag}</div>
+                </div>
+                <svg class="w-5 h-5 text-white/40 group-hover:text-sky-300 group-hover:translate-x-1 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="absolute bottom-10 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2 opacity-40">
+      <span class="text-[10px] uppercase tracking-[0.3em] text-slate-500">Scroll</span>
+      <div class="w-px h-8 bg-gradient-to-b from-blue-500/50 to-transparent"></div>
+    </div>
+  </section>
+
+
+  <section class="py-24 md:py-28 bg-slate-50">
+    <div class="max-w-6xl mx-auto px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-4">
+        <div>
+          <p class="text-[11px] font-semibold text-blue-700 uppercase tracking-[0.2em] mb-3">{d.directionsSectionEyebrow}</p>
+          <h2 class="font-display text-3xl md:text-4xl font-semibold text-slate-900 tracking-tight">{d.directionsSectionTitle}</h2>
+        </div>
+        <a href={String(d.directionsSectionLinkHref)} class="text-sm text-slate-500 hover:text-blue-700 transition-colors flex items-center gap-1 shrink-0 font-medium">
+          {d.directionsSectionLinkLabel}
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-5 gap-5 mb-5">
+        <a href={directions[0].href} class="fade-in group lg:col-span-3 relative rounded-2xl overflow-hidden flex flex-col ring-1 ring-slate-200/80 shadow-xl shadow-slate-900/5" style="min-height:340px;">
+          <img src={directions[0].img} alt={directions[0].title} class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy"/>
+          <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/65 to-black/25"></div>
+          <div class="relative z-10 p-6 flex justify-between items-start">
+            <span class="text-xs font-mono text-white/30">{directions[0].num}</span>
+            <span class="text-xs text-white/80 bg-white/10 backdrop-blur-sm px-2.5 py-1 rounded-full border border-white/20">{directions[0].tag}</span>
+          </div>
+          <div class="relative z-10 mt-auto p-6">
+            <h3 class="font-display text-2xl font-semibold text-white mb-2 group-hover:text-sky-200 transition-colors">{directions[0].title}</h3>
+            <p class="text-sm text-white/60 leading-relaxed mb-4 max-w-sm">{directions[0].desc}</p>
+            <span class="inline-flex items-center gap-1.5 text-sm text-sky-300 font-medium">
+              Подробнее
+              <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </span>
+          </div>
+        </a>
+
+        <a href={directions[1].href} class="fade-in group lg:col-span-2 relative rounded-2xl overflow-hidden flex flex-col ring-1 ring-slate-200/80 shadow-xl shadow-slate-900/5" style="min-height:340px;">
+          <img src={directions[1].img} alt={directions[1].title} class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy"/>
+          <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/65 to-black/25"></div>
+          <div class="relative z-10 p-6 flex justify-between items-start">
+            <span class="text-xs font-mono text-white/30">{directions[1].num}</span>
+            <span class="text-xs text-white/80 bg-white/10 backdrop-blur-sm px-2.5 py-1 rounded-full border border-white/20">{directions[1].tag}</span>
+          </div>
+          <div class="relative z-10 mt-auto p-6">
+            <h3 class="text-xl font-semibold text-white mb-2 group-hover:text-sky-300 transition-colors">{directions[1].title}</h3>
+            <p class="text-sm text-white/60 leading-relaxed mb-4">{directions[1].desc}</p>
+            <span class="inline-flex items-center gap-1.5 text-sm text-sky-300 font-medium">
+              Подробнее <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Нижние две карточки -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {directions.slice(2).map(item => (
+          <a href={item.href} class="fade-in group relative rounded-2xl overflow-hidden flex flex-col ring-1 ring-slate-200/80 shadow-lg shadow-slate-900/5" style="min-height:260px;">
+            <img src={item.img} alt={item.title} class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy"/>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-black/20"></div>
+            <div class="relative z-10 p-5 flex justify-between items-start">
+              <span class="text-xs font-mono text-white/30">{item.num}</span>
+              <span class="text-xs text-white/80 bg-white/10 backdrop-blur-sm px-2.5 py-1 rounded-full border border-white/20">{item.tag}</span>
+            </div>
+            <div class="relative z-10 mt-auto p-5">
+              <h3 class="text-lg font-semibold text-white mb-1.5 group-hover:text-sky-300 transition-colors">{item.title}</h3>
+              <p class="text-sm text-white/55 leading-relaxed mb-3">{item.desc}</p>
+              <span class="inline-flex items-center gap-1 text-sm text-sky-300 font-medium">
+                Подробнее <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              </span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════════
+       УСЛУГИ — иконки + описание
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="py-24 md:py-28 bg-white">
+    <div class="max-w-6xl mx-auto px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div>
+          <p class="text-[11px] font-semibold text-blue-700 uppercase tracking-[0.2em] mb-3">{d.cycleEyebrow}</p>
+          <h2 class="font-display text-3xl md:text-4xl font-semibold text-slate-900 mb-6 tracking-tight" set:html={String(d.cycleTitle).trim().replace(/\n/g, '<br/>')} />
+          <p class="text-slate-500 leading-relaxed mb-8">
+            {d.cycleLead}
+          </p>
+          <div class="rounded-2xl overflow-hidden aspect-[4/3] ring-1 ring-slate-200 shadow-xl shadow-slate-900/10">
+            <img
+              src={siteImg(String(d.cycleImageKey))}
+              alt={String(d.cycleImageAlt)}
+              class="w-full h-full object-cover"
+              loading="lazy"
+            />
+          </div>
+        </div>
+
+        <!-- Правая — карточки -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {homeServices.map((s) => (
+            <a href={s.href} class="fade-in group bg-slate-50 border border-slate-200/90 rounded-2xl p-6 hover:border-blue-300/80 hover:bg-white hover:shadow-lg hover:shadow-blue-900/5 transition-all card-hover">
+              <div class="w-11 h-11 bg-gradient-to-br from-blue-500/15 to-blue-600/5 rounded-xl flex items-center justify-center mb-4 ring-1 ring-blue-500/10">
+                <svg class="w-5 h-5 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" set:html={s.icon}></svg>
+              </div>
+              <h3 class="font-display font-semibold text-slate-900 group-hover:text-blue-700 transition-colors mb-2">{s.title}</h3>
+              <p class="text-sm text-slate-500 leading-relaxed">{s.desc}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SMARTPLAYER PROMO — параллакс
+  ══════════════════════════════════════════════════════════════ -->
+  <ParallaxSection
+    bgImage={parallaxPromo}
+    height="460px"
+  >
+    <div class="absolute inset-0 opacity-[0.07] pointer-events-none">
+      <svg class="w-full h-full"><defs><pattern id="dots" width="40" height="40" patternUnits="userSpaceOnUse">
+        <circle cx="1" cy="1" r="1" fill="white"/>
+      </pattern></defs><rect width="100%" height="100%" fill="url(#dots)"/></svg>
+    </div>
+    <div class="max-w-6xl mx-auto px-6 lg:px-8 py-20 w-full flex items-center h-full">
+      <div class="max-w-xl">
+        <p class="text-sky-300/95 text-[11px] font-semibold uppercase tracking-[0.2em] mb-3">{d.promoEyebrow}</p>
+        <h2 class="font-display text-4xl md:text-5xl font-semibold text-white mb-4 tracking-tight">{d.promoTitle}</h2>
+        <p class="text-white/55 text-base leading-relaxed mb-8">
+          {d.promoLead}
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <a href={String(d.promoCtaPrimaryHref)} class="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm font-semibold shadow-lg shadow-black/20 hover:from-blue-500 hover:to-blue-600 transition-all">
+            {d.promoCtaPrimaryLabel}
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </a>
+          <a href={String(d.promoCtaSecondaryHref)} class="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-white/10 text-white text-sm font-medium border border-white/25 hover:bg-white/15 transition-colors">
+            {d.promoCtaSecondaryLabel}
+          </a>
+        </div>
+      </div>
+    </div>
+  </ParallaxSection>
+
+
+  <!-- ═══════════════════════════════════════════════════════════
+       ПОРТФОЛИО — карточки с реальными фото
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="py-24 md:py-28 bg-slate-50">
+    <div class="max-w-6xl mx-auto px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-4">
+        <div>
+          <p class="text-[11px] font-semibold text-blue-700 uppercase tracking-[0.2em] mb-2">{d.portfolioEyebrow}</p>
+          <h2 class="font-display text-3xl md:text-4xl font-semibold text-slate-900 tracking-tight">{d.portfolioTitle}</h2>
+        </div>
+        <a href={String(d.portfolioLinkHref)} class="text-sm text-slate-500 hover:text-blue-700 font-medium transition-colors flex items-center gap-1 shrink-0">
+          {d.portfolioLinkLabel}
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {portfolio.map(p => (
+          <a href="/portfolio" class="fade-in group rounded-2xl overflow-hidden bg-white border border-slate-200/90 shadow-sm hover:shadow-xl hover:shadow-slate-900/10 hover:-translate-y-0.5 transition-all">
+            <div class="aspect-video overflow-hidden">
+              <img src={String(p.img)} alt={String(p.title)} class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]" loading="lazy"/>
+            </div>
+            <div class="p-6">
+              <span class="text-[11px] text-blue-800 font-semibold bg-blue-50 px-2.5 py-1 rounded-full">{p.sector}</span>
+              <h3 class="mt-3 font-display font-semibold text-slate-900 group-hover:text-blue-700 transition-colors">{p.title}</h3>
+              <p class="mt-1.5 text-sm text-slate-500 leading-relaxed">{p.desc}</p>
+              <div class="mt-4 flex flex-wrap gap-1.5">
+                {(p.tags as string[]).map(t => (
+                  <span class="px-2.5 py-0.5 bg-slate-100 text-slate-600 text-xs rounded-lg">{t}</span>
+                ))}
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════════
+       НОВОСТИ — с превью-изображениями
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="py-24 md:py-28 bg-white border-t border-slate-200/80">
+    <div class="max-w-6xl mx-auto px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-4">
+        <div>
+          <p class="text-[11px] font-semibold text-blue-700 uppercase tracking-[0.2em] mb-2">{d.newsEyebrow}</p>
+          <h2 class="font-display text-3xl md:text-4xl font-semibold text-slate-900 tracking-tight">{d.newsTitle}</h2>
+        </div>
+        <a href={String(d.newsLinkHref)} class="text-sm text-slate-500 hover:text-blue-700 font-medium transition-colors flex items-center gap-1 shrink-0">
+          {d.newsLinkLabel}
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {homeNews.map(n => (
+          <a href={n.href} class="fade-in group bg-slate-50 rounded-2xl overflow-hidden border border-slate-200/90 hover:shadow-lg hover:border-blue-200/60 transition-all">
+            <div class="aspect-video overflow-hidden">
+              <img src={n.img} alt={n.title} class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]" loading="lazy"/>
+            </div>
+            <div class="p-6">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[11px] text-blue-800 font-semibold bg-blue-50 px-2.5 py-1 rounded-full">{n.tag}</span>
+                <span class="text-xs text-slate-400">{n.date}</span>
+              </div>
+              <h3 class="font-display font-semibold text-slate-900 group-hover:text-blue-700 transition-colors leading-snug">{n.title}</h3>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════════
+       CTA — финальный параллакс
+  ══════════════════════════════════════════════════════════════ -->
+  <ParallaxSection
+    bgImage={parallaxCta}
+    overlay="var(--overlay-parallax-strong)"
+    height="340px"
+  >
+    <div class="max-w-6xl mx-auto px-6 lg:px-8 py-16 text-center w-full">
+      <h2 class="font-display text-3xl md:text-4xl font-semibold text-white mb-4 tracking-tight">{d.finalCtaTitle}</h2>
+      <p class="text-white/55 text-base mb-8 max-w-lg mx-auto">
+        {d.finalCtaLead}
+      </p>
+      <div class="flex flex-wrap justify-center gap-3">
+        <a href={String(d.finalCtaPrimaryHref)} class="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold shadow-lg shadow-black/25 hover:from-blue-500 hover:to-blue-600 transition-all">
+          {d.finalCtaPrimaryLabel}
+        </a>
+        <a href={String(d.finalCtaSecondaryHref)} class="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-white/10 text-white font-medium border border-white/25 hover:bg-white/15 transition-colors">
+          {d.finalCtaSecondaryLabel}
+        </a>
+      </div>
+    </div>
+  </ParallaxSection>
+
+
+  <!-- Форма обратной связи -->
+  <div id="estimate" class="max-w-6xl mx-auto px-6 lg:px-8 py-24 md:py-28 scroll-mt-24">
+    <ContactForm
+      variant="estimate"
+      title={String(d.formEstimateTitle)}
+      subtitle={String(d.formEstimateSubtitle)}
+    />
+  </div>
+
+  <script>
+    const DURATION_MS = 1400;
+
+    function easeOutCubic(t: number) {
+      return 1 - Math.pow(1 - t, 3);
+    }
+
+    function runCounter(el: HTMLElement) {
+      if (el.dataset.countDone === '1') return;
+      const raw = el.dataset.target;
+      const suffix = el.dataset.suffix ?? '';
+      const target = raw !== undefined ? Number(raw) : NaN;
+      if (Number.isNaN(target)) return;
+
+      el.dataset.countDone = '1';
+
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduced) {
+        el.textContent = String(target) + suffix;
+        return;
+      }
+
+      const start = performance.now();
+
+      function tick(now: number) {
+        const t = Math.min(1, (now - start) / DURATION_MS);
+        const eased = easeOutCubic(t);
+        const val = Math.round(target * eased);
+        el.textContent = String(val) + suffix;
+        if (t < 1) {
+          requestAnimationFrame(tick);
+        } else {
+          el.textContent = String(target) + suffix;
+        }
+      }
+
+      requestAnimationFrame(tick);
+    }
+
+    let countIo: IntersectionObserver | null = null;
+
+    function initCountUp() {
+      countIo?.disconnect();
+      const nodes = document.querySelectorAll<HTMLElement>('[data-count-up]');
+      if (!nodes.length) return;
+
+      countIo = new IntersectionObserver(
+        entries => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            runCounter(entry.target as HTMLElement);
+            countIo?.unobserve(entry.target);
+          }
+        },
+        { threshold: 0.25, rootMargin: '0px 0px -8% 0px' }
+      );
+
+      nodes.forEach(el => {
+        if (el.dataset.countDone !== '1') countIo?.observe(el);
+      });
+    }
+
+    initCountUp();
+    document.addEventListener('astro:page-load', initCountUp);
+  </script>
+</Layout>

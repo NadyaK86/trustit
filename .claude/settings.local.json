@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:mont-fort.com)",
+      "WebSearch",
+      "WebFetch(domain:en.wikipedia.org)"
+    ]
+  }
+}

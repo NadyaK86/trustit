@@ -1,0 +1,11 @@
+{
+  "name": "site-trust",
+  "private": true,
+  "description": "Прокси-скрипты: зависимости и Astro-проект в каталоге trust-site/",
+  "scripts": {
+    "dev": "npm run dev --prefix trust-site",
+    "build": "npm run build --prefix trust-site",
+    "preview": "npm run preview --prefix trust-site",
+    "install:site": "npm install --prefix trust-site"
+  }
+}

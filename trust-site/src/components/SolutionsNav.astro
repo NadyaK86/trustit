@@ -1,0 +1,56 @@
+---
+const currentPath = Astro.url.pathname;
+
+const items = [
+  { label: 'Digital Signage', href: '/solutions/digital-signage', tag: 'SmartPlayer' },
+  { label: 'Аудиовизуальные системы', href: '/solutions/av-systems', tag: 'AV solutions' },
+  { label: 'Переговорные комнаты', href: '/solutions/meeting-rooms', tag: 'Collaboration' },
+  { label: 'IT-инфраструктура', href: '/solutions/it-infrastructure', tag: 'IT infrastructure' },
+];
+
+function isActive(href: string) {
+  return currentPath === href || currentPath.startsWith(href + '/');
+}
+---
+
+<nav class="solutions-tabs" aria-label="Разделы решений">
+  <div class="max-w-6xl mx-auto px-6 lg:px-8">
+    <div class="flex items-center gap-2 py-3 flex-wrap text-sm">
+      <a
+        href="/solutions"
+        class={`px-3 py-1.5 rounded-lg transition-colors ${
+          currentPath === '/solutions'
+            ? 'bg-blue-600 text-white font-semibold'
+            : 'text-slate-600 hover:bg-slate-100'
+        }`}
+      >
+        Все решения
+      </a>
+      <span class="text-slate-300">·</span>
+      {items.map((it) => (
+        <a
+          href={it.href}
+          class={`px-3 py-1.5 rounded-lg transition-colors ${
+            isActive(it.href)
+              ? 'bg-blue-600 text-white font-semibold'
+              : 'text-slate-600 hover:bg-slate-100'
+          }`}
+        >
+          {it.label}
+        </a>
+      ))}
+    </div>
+  </div>
+</nav>
+
+<style>
+  .solutions-tabs {
+    background: white;
+    border-bottom: 1px solid rgb(226 232 240);
+    position: sticky;
+    top: 76px;
+    z-index: 20;
+    backdrop-filter: blur(8px);
+    background: rgba(255, 255, 255, 0.92);
+  }
+</style>
