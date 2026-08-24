@@ -21,7 +21,7 @@ try {
   }
 } catch {}
 
-const PORT = Number(process.env.ADMIN_PORT || 4322);
+const PORT = Number(process.env.ADMIN_PORT || process.env.PORT || 4322);
 const PASSWORD = process.env.ADMIN_PASSWORD || 'admin';
 const JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'dev-secret-please-change';
 const SITE_PATH = path.resolve(__dirname, process.env.SITE_PATH || '../trust-site');
@@ -140,6 +140,17 @@ const leadLimiter = createRateLimiter({ windowMs: 10 * 60 * 1000, max: 5 });
 
 const app = express();
 app.set('trust proxy', 1); // за nginx — корректный req.ip
+
+// Совместимость с окружениями, которые НЕ обрезают базовый префикс сами.
+// nginx (см. DEPLOY.md) настроен обрезать /admin перед проксированием — там это no-op.
+// Passenger на cPanel (см. DEPLOY-CPANEL.md) префикс НЕ обрезает — тут он и нужен.
+app.use((req, res, next) => {
+  if (req.url === '/admin' || req.url.startsWith('/admin/')) {
+    req.url = req.url.slice('/admin'.length) || '/';
+  }
+  next();
+});
+
 app.use(express.json({ limit: '5mb' }));
 
 // Базовые security-заголовки (без внешних зависимостей)
