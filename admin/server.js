@@ -496,6 +496,9 @@ app.post('/api/build', authRequired, (req, res) => {
   // env сборки: без секретов админки; PUBLIC_* нужны Astro
   const buildEnv = { PATH: process.env.PATH, HOME: process.env.HOME, NODE_ENV: process.env.NODE_ENV || 'production', FORCE_COLOR: '0' };
   for (const [k, v] of Object.entries(process.env)) if (k.startsWith('PUBLIC_')) buildEnv[k] = v;
+  // ASTRO_OUT_DIR — куда физически писать собранный сайт (см. astro.config.mjs).
+  // Нужно, когда dist должен лежать не рядом с проектом, а прямо в корне домена на хостинге.
+  if (process.env.ASTRO_OUT_DIR) buildEnv.ASTRO_OUT_DIR = process.env.ASTRO_OUT_DIR;
 
   logBuild('▶ Сборка сайта…\n');
   runStep('npm', ['run', 'build'], buildEnv, (code) => {

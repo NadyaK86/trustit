@@ -18,6 +18,14 @@ export default defineConfig({
   build: {
     assetsPrefix: process.env.PUBLIC_ASSETS_PREFIX || undefined,
   },
+  /**
+   * Куда физически писать собранный сайт.
+   * По умолчанию — обычная папка ./dist (локальная разработка, деплой по DEPLOY.md).
+   * На хостинге, где сайт и папка /admin делят одну и ту же публичную директорию домена
+   * (см. DEPLOY-CPANEL.md), задайте переменную окружения ASTRO_OUT_DIR — абсолютный путь
+   * к этой директории — и Astro будет собирать сайт прямо туда.
+   */
+  outDir: process.env.ASTRO_OUT_DIR || './dist',
   integrations: [sitemap()],
   redirects: {
     '/products': '/solutions',
@@ -30,5 +38,13 @@ export default defineConfig({
     plugins: [tailwindcss()],
     server: { allowedHosts: true },
     preview: { allowedHosts: true },
+    build: {
+      // КРИТИЧНО: если outDir указывает на папку, где также лежит /admin (или другие
+      // файлы, не относящиеся к Astro), emptyOutDir ДОЛЖЕН быть false — иначе Vite перед
+      // каждой сборкой будет полностью очищать outDir и снесёт папку admin вместе с ним.
+      // Обратная сторона: старые файлы от удалённых страниц не удаляются автоматически
+      // при пересборке — это приемлемый компромисс ради безопасности папки admin.
+      emptyOutDir: false,
+    },
   },
 });
