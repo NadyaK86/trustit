@@ -2,14 +2,13 @@
 
 Архитектура:
 - `trust-site` — статический Astro-сайт (`npm run build` → `dist/`), раздаётся nginx напрямую как статика на `trustit.by`.
-- `admin` — постоянно работающий Node/Express-процесс (порт 4322 по умолчанию), под управлением PM2. Обслуживает админку по адресу `trustit.by/admin`, приём заявок (`/api/lead`) и пересборку сайта.
+- `admin` — постоянно работающий Node/Express-процесс (порт 4322 по умолчанию), под управлением PM2. Обслуживает админку на отдельном поддомене `admin.trustit.by`, приём заявок (`/api/lead`, кросс-доменно с `trustit.by` через CORS) и пересборку сайта.
 
-Один домен, без поддомена:
-- `trustit.by/*` — статика сайта из `dist/`.
-- `trustit.by/admin` — проксируется в admin-приложение (со снятием префикса `/admin`, backend его не видит и не должен знать о нём).
-- `trustit.by/api/lead` — форма заявок с публичного сайта, тоже проксируется в admin-приложение (тот же порт 4322), но без снятия префикса — маршрут в backend называется именно `/api/lead`.
+Два "адреса":
+- **`trustit.by`** — статика сайта из `dist/`.
+- **`admin.trustit.by`** — целиком проксируется в admin-приложение (401 без авторизации, так что не страшно, если кто-то узнает адрес поддомена).
 
-> Важно: в репозитории уже внесены правки под `/admin` (файлы `admin/public/index.html` и `admin/public/app.js` — ссылки на свои же ассеты и API теперь абсолютные, с префиксом `/admin`). Если вы ещё не подтянули эти изменения в свой GitHub-репозиторий — заберите патч `admin-path-fix.patch`, который я подготовил, и накатите его (`git apply admin-path-fix.patch`), либо перенесите изменения вручную из этих двух файлов, потом закоммитьте и запушьте — сервер должен клонировать/тянуть уже обновлённую версию.
+Форма заявок на `trustit.by` шлёт запрос на `admin.trustit.by/api/lead` — это кросс-доменный запрос, но код уже умеет проверять `Origin` и разрешать его через CORS (переменная `SITE_ORIGIN`), ничего дополнительно настраивать не нужно.
 
 ---
 
@@ -53,9 +52,8 @@ nano .env
 Заполните `.env`:
 ```ini
 PUBLIC_SITE_URL=https://trustit.by
-PUBLIC_LEAD_ENDPOINT=/api/lead
+PUBLIC_LEAD_ENDPOINT=https://admin.trustit.by/api/lead
 ```
-(endpoint теперь можно указывать относительным путём — сайт и API на одном домене, кросс-доменных запросов больше нет)
 (`PUBLIC_FORMSPREE_URL`, `PUBLIC_RECAPTCHA_SITE_KEY`, `PUBLIC_YANDEX_METRIKA_ID` — по желанию, можно оставить пустыми)
 
 Собираем:
@@ -89,7 +87,6 @@ NODE_ENV=production
 
 SITE_ORIGIN=https://trustit.by
 SITE_PREVIEW_URL=https://trustit.by
-# ADMIN_BASE_PATH здесь не нужен — префикс /admin обрезает nginx, backend его не видит
 
 TELEGRAM_BOT_TOKEN=токен-вашего-бота
 TELEGRAM_CHAT_ID=id-чата-или-канала
@@ -115,6 +112,8 @@ curl http://127.0.0.1:4322/api/health
 
 ## 5. Настройка nginx
 
+### Основной сайт (статика + проксирование заявок)
+
 `/etc/nginx/sites-available/trustit.by`:
 ```nginx
 server {
@@ -124,27 +123,26 @@ server {
     root /var/www/trustit/trust-site/dist;
     index index.html;
 
-    # Статика сайта
     location / {
         try_files $uri $uri/ $uri.html =404;
     }
 
-    # Приём заявок с публичной формы — маршрут в backend называется именно /api/lead,
-    # префикс НЕ обрезаем (proxy_pass без завершающего URI = сохраняем путь как есть).
-    location = /api/lead {
-        proxy_pass http://127.0.0.1:4322;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+    location = /404.html {
+        internal;
     }
+}
+```
 
-    # Админка. Обратите внимание на завершающий "/" в location и в proxy_pass —
-    # это заставляет nginx СНИМАТЬ префикс /admin при проксировании, поэтому backend
-    # продолжает работать со своими обычными путями (/, /app.js, /api/..., и т.д.),
-    # ничего не зная о том, что снаружи он доступен как /admin/*.
-    location /admin/ {
-        proxy_pass http://127.0.0.1:4322/;
+### Админка (отдельный поддомен)
+
+`/etc/nginx/sites-available/admin.trustit.by`:
+```nginx
+server {
+    listen 80;
+    server_name admin.trustit.by;
+
+    location / {
+        proxy_pass http://127.0.0.1:4322;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -154,30 +152,25 @@ server {
         proxy_buffering off;
         proxy_read_timeout 3600s;
     }
-
-    # /admin без слэша на конце — редирект на /admin/
-    location = /admin {
-        return 301 /admin/;
-    }
-
-    location = /404.html {
-        internal;
-    }
 }
 ```
 
-Включаем сайт и получаем SSL:
+Включаем сайты и получаем SSL:
 ```bash
 sudo ln -s /etc/nginx/sites-available/trustit.by /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/admin.trustit.by /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl reload nginx
 
 sudo certbot --nginx -d trustit.by -d www.trustit.by
+sudo certbot --nginx -d admin.trustit.by
 ```
+
+Не забудьте создать DNS-запись `admin` (A-запись на IP VPS) в панели управления доменом на hoster.by, до того как запускать certbot для поддомена.
 
 ## 6. Как теперь публиковать изменения контента
 
-1. Заходите на `https://trustit.by/admin`, логинитесь.
+1. Заходите на `https://admin.trustit.by`, логинитесь.
 2. Редактируете новости/портфолио/страницы, загружаете картинки.
 3. Жмёте «Собрать сайт» — admin-сервер выполнит `npm run build` в `trust-site` и обновит `dist/`.
 4. Так как nginx отдаёт `dist/` напрямую как статику — обновления появляются сразу после успешной сборки, без перезапуска nginx или admin-процесса.

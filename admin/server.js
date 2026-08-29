@@ -140,17 +140,6 @@ const leadLimiter = createRateLimiter({ windowMs: 10 * 60 * 1000, max: 5 });
 
 const app = express();
 app.set('trust proxy', 1); // за nginx — корректный req.ip
-
-// Совместимость с окружениями, которые НЕ обрезают базовый префикс сами.
-// nginx (см. DEPLOY.md) настроен обрезать /admin перед проксированием — там это no-op.
-// Passenger на cPanel (см. DEPLOY-CPANEL.md) префикс НЕ обрезает — тут он и нужен.
-app.use((req, res, next) => {
-  if (req.url === '/admin' || req.url.startsWith('/admin/')) {
-    req.url = req.url.slice('/admin'.length) || '/';
-  }
-  next();
-});
-
 app.use(express.json({ limit: '5mb' }));
 
 // Базовые security-заголовки (без внешних зависимостей)
@@ -497,7 +486,8 @@ app.post('/api/build', authRequired, (req, res) => {
   const buildEnv = { PATH: process.env.PATH, HOME: process.env.HOME, NODE_ENV: process.env.NODE_ENV || 'production', FORCE_COLOR: '0' };
   for (const [k, v] of Object.entries(process.env)) if (k.startsWith('PUBLIC_')) buildEnv[k] = v;
   // ASTRO_OUT_DIR — куда физически писать собранный сайт (см. astro.config.mjs).
-  // Нужно, когда dist должен лежать не рядом с проектом, а прямо в корне домена на хостинге.
+  // Нужно на хостинге, где под сайт выделена отдельная папка домена (dist должен
+  // писаться прямо туда, а не в папку рядом с исходниками проекта).
   if (process.env.ASTRO_OUT_DIR) buildEnv.ASTRO_OUT_DIR = process.env.ASTRO_OUT_DIR;
 
   logBuild('▶ Сборка сайта…\n');

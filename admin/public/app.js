@@ -1,5 +1,5 @@
-import { SCHEMAS, schemaFor } from '/admin/schemas.js';
-import yamlLib from '/admin/vendor/js-yaml.mjs';
+import { SCHEMAS, schemaFor } from '/schemas.js';
+import yamlLib from '/vendor/js-yaml.mjs';
 
 const TOKEN_KEY = 'trust-admin-token';
 const state = {
@@ -23,15 +23,6 @@ const state = {
   collapsed: {},
 };
 
-// Для превью картинок ВНУТРИ админки (до публикации сайта) — идём через собственный
-// прокси-роут админки (/admin/images/...). Значение, которое пишется в контент
-// (frontmatter), остаётся как есть: '/images/...' — так его отдаёт сам сайт.
-function adminPreviewUrl(u) {
-  if (!u) return u;
-  if (/^https?:\/\//i.test(u) || u.startsWith('//') || u.startsWith('/admin/')) return u;
-  return u.startsWith('/') ? '/admin' + u : u;
-}
-
 // ---------- low-level ----------
 function api(path, opts = {}) {
   const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
@@ -39,7 +30,7 @@ function api(path, opts = {}) {
   const init = { ...opts, headers };
   if (opts.body && !(opts.body instanceof FormData)) init.body = JSON.stringify(opts.body);
   if (opts.body instanceof FormData) { delete headers['Content-Type']; init.body = opts.body; }
-  return fetch('/admin' + path, init).then(async (r) => {
+  return fetch(path, init).then(async (r) => {
     const ct = r.headers.get('content-type') || '';
     const data = ct.includes('json') ? await r.json() : await r.text();
     if (!r.ok) {
@@ -593,7 +584,7 @@ function renderImageField(container, field, obj) {
   const url = get(obj, field.key) ?? '';
   const wrap = document.createElement('div');
   wrap.className = 'image-field';
-  const previewHtml = (u) => u ? `<img src="${escapeHtml(adminPreviewUrl(u))}" alt="" />` : '<span class="muted">Нет изображения</span>';
+  const previewHtml = (u) => u ? `<img src="${escapeHtml(u)}" alt="" />` : '<span class="muted">Нет изображения</span>';
   wrap.innerHTML = `
     <div class="image-preview">${previewHtml(url)}</div>
     <div class="image-actions">
@@ -734,7 +725,7 @@ function openImagePicker(onPick) {
       if (!files.length) grid.innerHTML = '<p class="muted">Пока нет загруженных файлов.</p>';
       for (const img of files) {
         const c = document.createElement('div'); c.className = 'img-card';
-        c.innerHTML = `<img src="${escapeHtml(adminPreviewUrl(img.path))}" /><div class="img-name">${escapeHtml(img.name)}</div>`;
+        c.innerHTML = `<img src="${escapeHtml(img.path)}" /><div class="img-name">${escapeHtml(img.name)}</div>`;
         c.addEventListener('click', () => { onPick(img.path); close(); });
         grid.appendChild(c);
       }
@@ -819,7 +810,7 @@ function renderImages(main) {
   for (const img of state.images) {
     const c = document.createElement('div');
     c.className = 'img-card';
-    c.innerHTML = `<img src="${escapeHtml(adminPreviewUrl(img.path))}" /><div class="img-name" title="${escapeHtml(img.name)}">${escapeHtml(img.name)}</div><div class="img-sub copy">${escapeHtml(img.path)}</div><button class="rm-img danger">Удалить</button>`;
+    c.innerHTML = `<img src="${escapeHtml(img.path)}" /><div class="img-name" title="${escapeHtml(img.name)}">${escapeHtml(img.name)}</div><div class="img-sub copy">${escapeHtml(img.path)}</div><button class="rm-img danger">Удалить</button>`;
     c.querySelector('.copy').addEventListener('click', () => { navigator.clipboard.writeText(img.path); notify('Путь скопирован'); });
     c.querySelector('.rm-img').addEventListener('click', async () => {
       if (!confirm(`Удалить ${img.name}?`)) return;
@@ -940,7 +931,7 @@ function startBuild() {
   updatePublishUi();
   if (state.view === 'build') renderMain();
   api('/api/build', { method: 'POST' }).catch((e) => notify(e.message, 'err'));
-  const es = new EventSource(`/admin/api/build/stream?token=${encodeURIComponent(state.token)}`);
+  const es = new EventSource(`/api/build/stream?token=${encodeURIComponent(state.token)}`);
   es.onmessage = (ev) => {
     const msg = JSON.parse(ev.data);
     if (msg.type === 'log') { state.build.log += msg.text; const el = document.getElementById('build-log'); if (el) { el.textContent = state.build.log; el.scrollTop = el.scrollHeight; } }
